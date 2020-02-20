@@ -1,5 +1,9 @@
 from bitarray import bitarray
+from array import array
+import struct
 import math
+
+SLOT_SIZE_BYTE = 4
 
 if __name__ == "__main__":
 
@@ -8,8 +12,12 @@ if __name__ == "__main__":
     # multiplo del byte, altrimenti bitarray
     # ha problemi nella conversione con endianess
     pulsesEncoderBytes = math.ceil(pulsesEncoder / 8)
+    pulsesEncoderInts = math.ceil(pulsesEncoder / (8*SLOT_SIZE_BYTE)) # long int in python e' 4 byte
     encoderMap = bitarray(pulsesEncoderBytes * 8)
     encoderMap.setall(False)
+    encodeUIntMap = array("I", [0]*pulsesEncoderInts)
+
+    print("single item size: "+str(encodeUIntMap.itemsize))
 
     print("Scegliere modalita' generazione mappa encoder\n"
           "1. impulsi virtuali equispaziati\n"
@@ -22,6 +30,9 @@ if __name__ == "__main__":
         pulseDistance += 1
         for i in range(0, pulsesEncoder, pulseDistance):
             encoderMap[i] = True
+            intPos = int (i / (SLOT_SIZE_BYTE*8))
+            bitOffset = int (i % (SLOT_SIZE_BYTE*8))
+            encodeUIntMap[intPos] |= 0x01 << bitOffset
 
     elif choice == 2:
         pulsesVirtualEncoder = int (input("Numero impulsi encoder virtuale: "))
@@ -29,19 +40,28 @@ if __name__ == "__main__":
         for i in range(pulsesVirtualEncoder):
             position = round(step * i)
             encoderMap[position] = True
+            intPos = int(i / (SLOT_SIZE_BYTE*8))
+            bitOffset = int(i % (SLOT_SIZE_BYTE*8))
+            encodeUIntMap[intPos] |= 0x01 << bitOffset
     else:
         exit(0)
 
+    '''
     print("Selezionare endianess:\n"
           "1. little\n"
-          "2. big")
+          "2. big\n"
+          "3. 4byte-mode")
 
-    endianess = int(input("Endianess: "))
+    outputMode = int(input("Endianess: "))
 
     with open("./workfile.map", "wb") as f:
-        if endianess == 1:
+        if outputMode == 1:
             encMapEndianess = bitarray(encoderMap, endian="little")
-        elif endianess == 2:
+        elif outputMode == 2:
             encMapEndianess = encoderMap
-
+        elif outputMode == 3:
+            encMapEndianess = encodeUIntMap
+    '''
+    with open("./workfile.map", "wb") as f:
+        encMapEndianess = encodeUIntMap
         f.write(encMapEndianess.tobytes())
