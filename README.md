@@ -4,6 +4,9 @@ creazione ambiente virtuale python:
 
 ./python3 -m venv ~/workspace/fels2-scripts/venv/
 
-successivamente, aggiungere all'ambiente virtuale i seguenti pacchetti
+Successivamente, aggiungere all'ambiente virtuale i seguenti pacchetti
 
-./pip install bitarray
+<ol>
+<li>./pip install bitarray</li>
+<li>./pip install Pillow</li>
+</ol>
