@@ -25,6 +25,7 @@ if __name__ == "__main__":
 
     choice = int(input("Scelta: "))
 
+    countVirtualPulses = 0
     if choice == 1:
         pulseDistance = int (input("Inserire spaziatura impulsi encoder virtuale: "))
         pulseDistance += 1
@@ -33,6 +34,7 @@ if __name__ == "__main__":
             intPos = int (i / (SLOT_SIZE_BYTE*8))
             bitOffset = int (i % (SLOT_SIZE_BYTE*8))
             encodeUIntMap[intPos] |= 0x01 << bitOffset
+            countVirtualPulses += 1
 
     elif choice == 2:
         pulsesVirtualEncoder = int (input("Numero impulsi encoder virtuale: "))
@@ -43,9 +45,11 @@ if __name__ == "__main__":
             intPos = int(i / (SLOT_SIZE_BYTE*8))
             bitOffset = int(i % (SLOT_SIZE_BYTE*8))
             encodeUIntMap[intPos] |= 0x01 << bitOffset
+            countVirtualPulses += 1
     else:
         exit(0)
 
+    print("Numero impulsi encoder virtuale: "+str(countVirtualPulses))
     '''
     print("Selezionare endianess:\n"
           "1. little\n"
@@ -62,6 +66,8 @@ if __name__ == "__main__":
         elif outputMode == 3:
             encMapEndianess = encodeUIntMap
     '''
-    with open("./workfile.map", "wb") as f:
+    with open("./virtualEncoder.map", "wb") as f:
         encMapEndianess = encodeUIntMap
         f.write(encMapEndianess.tobytes())
+
+    exit(0)

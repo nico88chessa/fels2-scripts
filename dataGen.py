@@ -3,24 +3,34 @@ from array import array
 import math
 
 #  ./images/BN-10col-W1000H1@2540dpi.tif
+#  ./images/grayscale-0.5x1@2540dpi.tif
 
 if __name__ == "__main__":
 
-    # filePath = input("Inserire nome file: ")
-    filePath = "./images/BN-10col-0.5x1@2540dpi.tif"
+    # filePath = "./images/BN-0.5x1@2540dpi.tif"
+    # filePath = "./images/triangolo-20x10@2540.tif"
+    # filePath = "./images/grayscale-0.5x1@2540dpi.tif"
+    filePath = input("Inserire nome file: ")
     print("Filepath: "+filePath)
 
     with Image.open(filePath) as image:
 
         width, height = image.size
+        numPixels = width * height
         imageData = list(image.getdata())
 
         print("Image mode: "+str(image.mode))
         tiffTags = {TiffTags.lookup(k).name: v for k, v in image.tag_v2.items()}
-        whiteIsZero = (tiffTags["PhotometricInterpretation"]==0)
+        blackIsZero = (tiffTags["PhotometricInterpretation"]==1)
 
-        if whiteIsZero & False:
+        '''
+        Image open se ne frega dell'interpretazione del tif. 255 e' bianco e 0 e' nero SEMPRE.
+        per cui devo sempre invertire
+        
+        if blackIsZero:
             imageData = [255-imageData[i] for i in range(len(imageData))]
+        '''
+        imageData = [255 - imageData[i] for i in range(len(imageData))]
 
         imageRows = [imageData[i*width : (i+1)*width] for i in range(height)]
 
@@ -46,7 +56,7 @@ if __name__ == "__main__":
                 bytesPerRow = math.ceil(numPixelCircumference / 8)
                 bytesPerImage = bytesPerRow*height
 
-                rawImage = array('B', [0]*bytesPerImage)
+                rawImage = array("B", [0]*bytesPerImage)
 
                 for r in range(height):
                     # cylinderRows[r][0:width] = imageRows[r]
@@ -58,15 +68,16 @@ if __name__ == "__main__":
                         value = 0x00 if (cylinderRow[c]==0) else (0x01 << offset)
                         rawImage[index] |= value
 
-                with open("./1b.data", "wb") as f:
+                with open("./1b-1laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 8:
                 chunk = math.ceil(height / numLaser)
                 # cylinderRows = [[0] * numPixelCircumference for i in range(chunk)]
-                bytesPerRow = math.ceil(numPixelCircumference)
-                bytesPerImage = bytesPerRow * height
-                rawImage = array('B', [0] * bytesPerImage)
+                # bytesPerRow = math.ceil(numPixelCircumference)
+                # byt8esPerImage = bytesPerRow * height
+                # rawImage = array("B", [0] * bytesPerImage)
+                rawImage = array("B", [0] * numPixels)
 
                 for c in range(chunk):
                     cylinderRow = [0] * numPixelCircumference
@@ -91,16 +102,17 @@ if __name__ == "__main__":
 
 
                     # rawImage[c*bytesPerRow:] = array('B', cylinderRows[c])
-                    rawImage[c * bytesPerRow:] = array('B', cylinderRow)
+                    rawImage[c * numPixelCircumference:] = array("B", cylinderRow)
 
-                with open("./raw1b-8laser.map", "wb") as f:
+                with open("./1b-8laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 16:
                 chunk = math.ceil(height / numLaser)
-                bytesPerRow = math.ceil(numPixelCircumference)*2
-                bytesPerImage = bytesPerRow * height
-                rawImage = array('H', [0] * bytesPerImage)
+                # bytesPerRow = math.ceil(numPixelCircumference)*2
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("H", [0] * bytesPerImage)
+                rawImage = array("H", [0] * numPixels)
                 for c in range(chunk):
                     cylinderRow = [0] * numPixelCircumference
                     for colChunk in range(width):
@@ -120,15 +132,16 @@ if __name__ == "__main__":
                         cylinderRow[colChunk] |= (0x01 << 13) if numLaser > 13 and ((c*numLaser) + 13)<height and imageRows[(c*numLaser) + 13][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 14) if numLaser > 14 and ((c*numLaser) + 14)<height and imageRows[(c*numLaser) + 14][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 15) if numLaser > 15 and ((c*numLaser) + 15)<height and imageRows[(c*numLaser) + 15][colChunk]==255 else 0x00
-                    rawImage[c * bytesPerRow:] = array('H', cylinderRow)
-                with open("./raw1b-16laser.map", "wb") as f:
+                    rawImage[c * numPixelCircumference:] = array("H", cylinderRow)
+                with open("./1b-16laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 32:
                 chunk = math.ceil(height / numLaser)
-                bytesPerRow = math.ceil(numPixelCircumference) * 4
-                bytesPerImage = bytesPerRow * height
-                rawImage = array('I', [0] * bytesPerImage)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 4
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("I", [0] * bytesPerImage)
+                rawImage = array("I", [0] * numPixels)
                 for c in range(chunk):
                     cylinderRow = [0] * numPixelCircumference
                     for colChunk in range(width):
@@ -164,15 +177,16 @@ if __name__ == "__main__":
                         cylinderRow[colChunk] |= (0x01 << 29) if numLaser > 29 and ((c*numLaser) + 29)<height and imageRows[(c*numLaser) + 29][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 30) if numLaser > 30 and ((c*numLaser) + 30)<height and imageRows[(c*numLaser) + 30][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 31) if numLaser > 31 and ((c*numLaser) + 31)<height and imageRows[(c*numLaser) + 31][colChunk]==255 else 0x00
-                    rawImage[c * bytesPerRow:] = array('I', cylinderRow)
-                with open("./raw1b-32laser.map", "wb") as f:
+                    rawImage[c * numPixelCircumference:] = array("I", cylinderRow)
+                with open("./1b-32laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 64:
                 chunk = math.ceil(height / numLaser)
-                bytesPerRow = math.ceil(numPixelCircumference) * 8
-                bytesPerImage = bytesPerRow * height
-                rawImage = array('L', [0] * bytesPerImage)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 8
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("L", [0] * bytesPerImage)
+                rawImage = array("L", [0] * numPixels)
                 for c in range(chunk):
                     cylinderRow = [0] * numPixelCircumference
                     for colChunk in range(width):
@@ -240,13 +254,132 @@ if __name__ == "__main__":
                         cylinderRow[colChunk] |= (0x01 << 61) if numLaser > 61 and ((c*numLaser) + 61)<height and imageRows[(c*numLaser) + 61][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 62) if numLaser > 62 and ((c*numLaser) + 62)<height and imageRows[(c*numLaser) + 62][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 63) if numLaser > 63 and ((c*numLaser) + 63)<height and imageRows[(c*numLaser) + 63][colChunk]==255 else 0x00
-                    rawImage[c * bytesPerRow:] = array('L', cylinderRow)
-                with open("./raw1b-64laser.map", "wb") as f:
+                    rawImage[c * numPixelCircumference:] = array("L", cylinderRow)
+                with open("./1b-64laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
         elif sc==2:
-            pass
-        elif sc==3:            pass
+            if numLaser == 1:
+                chunk = math.ceil(height / numLaser)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 1
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("B", [0] * bytesPerImage)
+                rawImage = array("B", [0] * numPixels)
+                for c in range(chunk):
+                    cylinderRow = [0] * numPixelCircumference
+                    # for col in range(width):
+                    #     cylinderRow[col] = imageRows[c][col]
+                    cylinderRow[:width] = imageRows[c]
+                    rawImage[c * numPixelCircumference:] = array("B", cylinderRow)
 
+                with open("./GS8-1laser.raw", "wb") as f:
+                    f.write(rawImage.tobytes())
 
+            elif numLaser == 2:
+                chunk = math.ceil(height / numLaser)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 2
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("H", [0] * bytesPerImage)
+                rawImage = array("H", [0] * numPixels)
+                for c in range(chunk):
+                    cylinderRow = [0] * numPixelCircumference
+                    for col in range(width):
+                        cylinderRow[col] |= imageRows[(c*numLaser) + 0][col]
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 1][col] << 8) if ((c*numLaser) + 1)<height else 0x00
+                    rawImage[c*numPixelCircumference:] = array("H", cylinderRow)
 
+                with open("./GS8-2laser.raw", "wb") as f:
+                    f.write(rawImage.tobytes())
+
+            elif numLaser <= 4:
+                chunk = math.ceil(height / numLaser)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 4
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("I", [0] * bytesPerImage)
+                rawImage = array("I", [0] * numPixels)
+                for c in range(chunk):
+                    cylinderRow = [0] * numPixelCircumference
+                    for col in range(width):
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 0][col] << 0) if numLaser > 0 and ((c*numLaser) + 0) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 1][col] << 8) if  numLaser > 1 and ((c*numLaser) + 1) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 2][col] << 16) if numLaser > 2 and ((c*numLaser) + 2) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 3][col] << 24) if numLaser > 3 and ((c*numLaser) + 3) < height else 0x00
+                    rawImage[c * numPixelCircumference:] = array("I", cylinderRow)
+
+                with open("./GS8-4laser.raw", "wb") as f:
+                    f.write(rawImage.tobytes())
+
+            elif numLaser <= 8:
+                chunk = math.ceil(height / numLaser)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 4
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("L", [0] * bytesPerImage)
+                rawImage = array("L", [0] * numPixels)
+                for c in range(chunk):
+                    cylinderRow = [0] * numPixelCircumference
+                    for col in range(width):
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 0][col] << 0) if numLaser > 0 and ((c*numLaser) + 0) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 1][col] << 8) if  numLaser > 1 and ((c*numLaser) + 1) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 2][col] << 16) if numLaser > 2 and ((c*numLaser) + 2) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 3][col] << 24) if numLaser > 3 and ((c*numLaser) + 3) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 4][col] << 32) if numLaser > 4 and ((c*numLaser) + 4) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 5][col] << 40) if numLaser > 5 and ((c*numLaser) + 5) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 6][col] << 48) if numLaser > 6 and ((c*numLaser) + 6) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 7][col] << 56) if numLaser > 7 and ((c*numLaser) + 7) < height else 0x00
+                    rawImage[c * numPixelCircumference:] = array("L", cylinderRow)
+
+                with open("./GS8-8laser.raw", "wb") as f:
+                    f.write(rawImage.tobytes())
+
+        elif sc==3:
+
+            if numLaser == 1:
+                chunk = math.ceil(height / numLaser)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 2
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("H", [0] * bytesPerImage)
+                rawImage = array("H", [0] * numPixels)
+                for c in range(chunk):
+                    cylinderRow = [0] * numPixelCircumference
+                    for col in range(width):
+                        cylinderRow[col] = imageRows[c][col]
+                    rawImage[c * numPixelCircumference:] = array("H", cylinderRow)
+
+                with open("./GS16-1laser.map", "wb") as f:
+                    f.write(rawImage.tobytes())
+
+            elif numLaser == 2:
+                chunk = math.ceil(height / numLaser)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 4
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array("I", [0] * bytesPerImage)
+                rawImage = array("I", [0] * numPixels)
+                for c in range(chunk):
+                    cylinderRow = [0] * numPixelCircumference
+                    for col in range(width):
+                        cylinderRow[col] |= imageRows[(c*numLaser) + 0][col]
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 1][col] << 16) if ((c*numLaser) + 1) < height else 0x00
+                    rawImage[c * numPixelCircumference:] = array("I", cylinderRow)
+
+                with open("./GS8-2laser.raw", "wb") as f:
+                    f.write(rawImage.tobytes())
+
+            elif numLaser <= 4:
+                chunk = math.ceil(height / numLaser)
+                # bytesPerRow = math.ceil(numPixelCircumference) * 8
+                # bytesPerImage = bytesPerRow * height
+                # rawImage = array('L', [0] * bytesPerImage)
+                rawImage = array("L", [0] * numPixels)
+                for c in range(chunk):
+                    cylinderRow = [0] * numPixelCircumference
+                    for col in range(width):
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 0][col] << 0) if numLaser > 0 and ((c*numLaser) + 0) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 1][col] << 16) if numLaser > 1 and ((c*numLaser) + 1) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 2][col] << 32) if numLaser > 2 and ((c*numLaser) + 2) < height else 0x00
+                        cylinderRow[col] |= (imageRows[(c*numLaser) + 3][col] << 48) if numLaser > 3 and ((c*numLaser) + 3) < height else 0x00
+                    rawImage[c * numPixelCircumference:] = array("L", cylinderRow)
+
+                with open("./GS8-4laser.raw", "wb") as f:
+                    f.write(rawImage.tobytes())
+
+    exit(0)
