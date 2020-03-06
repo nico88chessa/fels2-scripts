@@ -27,13 +27,13 @@ if __name__ == "__main__":
         if laserNum == 1:
             powerTable1b = array("H", (0,) * FELS2_MAX_NUM_LASERS * 2)
             powerTable1b[1] = tonLaser1Ticks
-            with open("./powerTable1b.pot", "wb") as fp:
+            with open("./output/powerTable1b.pot", "wb") as fp:
                 fp.write(powerTable1b.tobytes())
         else:
             tonLaser2Ns = round(float(input("Selezionare Ton laser 2 [us]: "))*1000)
             tonLaser2Ticks = int(tonLaser2Ns / FELS2_CLOCK_INTERVAL_NS)
             powerTable1b = array("H", (0, tonLaser1Ticks, 0, tonLaser2Ticks)*int(FELS2_MAX_NUM_LASERS/2))
-            with open("./powerTable1b.pot", "wb") as fp:
+            with open("./output/powerTable1b.pot", "wb") as fp:
                 fp.write(powerTable1b.tobytes())
 
     elif choice == 2:
@@ -43,7 +43,7 @@ if __name__ == "__main__":
         for i in range(GS8_SIZE):
             powerTableGS8[i] = round(step * i)
 
-        with open("./powerTableGS8.pot", "wb") as fp:
+        with open("./output/powerTableGS8.pot", "wb") as fp:
             fp.write(powerTableGS8.tobytes())
 
     elif choice == 3:
@@ -54,7 +54,7 @@ if __name__ == "__main__":
         for i in range(GS16_SIZE):
             powerTableGS16[i] = round(step * i)
 
-        with open("./powerTableGS16.pot", "wb") as fp:
+        with open("./output/powerTableGS16.pot", "wb") as fp:
             fp.write(powerTableGS16.tobytes())
 
     exit(0)

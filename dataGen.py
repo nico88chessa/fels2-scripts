@@ -68,7 +68,7 @@ if __name__ == "__main__":
                         value = 0x00 if (cylinderRow[c]==0) else (0x01 << offset)
                         rawImage[index] |= value
 
-                with open("./1b-1laser.raw", "wb") as f:
+                with open("./output/1b-1laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 8:
@@ -104,7 +104,7 @@ if __name__ == "__main__":
                     # rawImage[c*bytesPerRow:] = array('B', cylinderRows[c])
                     rawImage[c * numPixelCircumference:] = array("B", cylinderRow)
 
-                with open("./1b-8laser.raw", "wb") as f:
+                with open("./output/1b-8laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 16:
@@ -133,7 +133,7 @@ if __name__ == "__main__":
                         cylinderRow[colChunk] |= (0x01 << 14) if numLaser > 14 and ((c*numLaser) + 14)<height and imageRows[(c*numLaser) + 14][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 15) if numLaser > 15 and ((c*numLaser) + 15)<height and imageRows[(c*numLaser) + 15][colChunk]==255 else 0x00
                     rawImage[c * numPixelCircumference:] = array("H", cylinderRow)
-                with open("./1b-16laser.raw", "wb") as f:
+                with open("./output/1b-16laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 32:
@@ -178,7 +178,7 @@ if __name__ == "__main__":
                         cylinderRow[colChunk] |= (0x01 << 30) if numLaser > 30 and ((c*numLaser) + 30)<height and imageRows[(c*numLaser) + 30][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 31) if numLaser > 31 and ((c*numLaser) + 31)<height and imageRows[(c*numLaser) + 31][colChunk]==255 else 0x00
                     rawImage[c * numPixelCircumference:] = array("I", cylinderRow)
-                with open("./1b-32laser.raw", "wb") as f:
+                with open("./output/1b-32laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 64:
@@ -255,7 +255,7 @@ if __name__ == "__main__":
                         cylinderRow[colChunk] |= (0x01 << 62) if numLaser > 62 and ((c*numLaser) + 62)<height and imageRows[(c*numLaser) + 62][colChunk]==255 else 0x00
                         cylinderRow[colChunk] |= (0x01 << 63) if numLaser > 63 and ((c*numLaser) + 63)<height and imageRows[(c*numLaser) + 63][colChunk]==255 else 0x00
                     rawImage[c * numPixelCircumference:] = array("L", cylinderRow)
-                with open("./1b-64laser.raw", "wb") as f:
+                with open("./output/1b-64laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
         elif sc==2:
@@ -272,7 +272,7 @@ if __name__ == "__main__":
                     cylinderRow[:width] = imageRows[c]
                     rawImage[c * numPixelCircumference:] = array("B", cylinderRow)
 
-                with open("./GS8-1laser.raw", "wb") as f:
+                with open("./output/GS8-1laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser == 2:
@@ -288,7 +288,7 @@ if __name__ == "__main__":
                         cylinderRow[col] |= (imageRows[(c*numLaser) + 1][col] << 8) if ((c*numLaser) + 1)<height else 0x00
                     rawImage[c*numPixelCircumference:] = array("H", cylinderRow)
 
-                with open("./GS8-2laser.raw", "wb") as f:
+                with open("./output/GS8-2laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 4:
@@ -306,7 +306,7 @@ if __name__ == "__main__":
                         cylinderRow[col] |= (imageRows[(c*numLaser) + 3][col] << 24) if numLaser > 3 and ((c*numLaser) + 3) < height else 0x00
                     rawImage[c * numPixelCircumference:] = array("I", cylinderRow)
 
-                with open("./GS8-4laser.raw", "wb") as f:
+                with open("./output/GS8-4laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 8:
@@ -328,7 +328,7 @@ if __name__ == "__main__":
                         cylinderRow[col] |= (imageRows[(c*numLaser) + 7][col] << 56) if numLaser > 7 and ((c*numLaser) + 7) < height else 0x00
                     rawImage[c * numPixelCircumference:] = array("L", cylinderRow)
 
-                with open("./GS8-8laser.raw", "wb") as f:
+                with open("./output/GS8-8laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
         elif sc==3:
@@ -345,7 +345,7 @@ if __name__ == "__main__":
                         cylinderRow[col] = imageRows[c][col]
                     rawImage[c * numPixelCircumference:] = array("H", cylinderRow)
 
-                with open("./GS16-1laser.map", "wb") as f:
+                with open("./output/GS16-1laser.map", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser == 2:
@@ -361,7 +361,7 @@ if __name__ == "__main__":
                         cylinderRow[col] |= (imageRows[(c*numLaser) + 1][col] << 16) if ((c*numLaser) + 1) < height else 0x00
                     rawImage[c * numPixelCircumference:] = array("I", cylinderRow)
 
-                with open("./GS8-2laser.raw", "wb") as f:
+                with open("./output/GS8-2laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
             elif numLaser <= 4:
@@ -379,7 +379,7 @@ if __name__ == "__main__":
                         cylinderRow[col] |= (imageRows[(c*numLaser) + 3][col] << 48) if numLaser > 3 and ((c*numLaser) + 3) < height else 0x00
                     rawImage[c * numPixelCircumference:] = array("L", cylinderRow)
 
-                with open("./GS8-4laser.raw", "wb") as f:
+                with open("./output/GS8-4laser.raw", "wb") as f:
                     f.write(rawImage.tobytes())
 
     exit(0)

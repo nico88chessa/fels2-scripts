@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
     outputMode = int(input("Endianess: "))
 
-    with open("./workfile.map", "wb") as f:
+    with open("./output/workfile.map", "wb") as f:
         if outputMode == 1:
             encMapEndianess = bitarray(encoderMap, endian="little")
         elif outputMode == 2:
@@ -66,7 +66,7 @@ if __name__ == "__main__":
         elif outputMode == 3:
             encMapEndianess = encodeUIntMap
     '''
-    with open("./virtualEncoder.map", "wb") as f:
+    with open("./output/virtualEncoder.map", "wb") as f:
         encMapEndianess = encodeUIntMap
         f.write(encMapEndianess.tobytes())
 
