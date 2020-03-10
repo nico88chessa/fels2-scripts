@@ -31,21 +31,21 @@ class Logger(metaclass=Singleton):
         if needRollover:
             handler.doRollover()
 
-        self._logger = logging.getLogger("logger")
-        self._logger.addHandler(handler)
-        self._logger.setLevel(logging.DEBUG)
+        self.__logger = logging.getLogger("logger")
+        self.__logger.addHandler(handler)
+        self.__logger.setLevel(logging.DEBUG)
 
     def debug(self, msg):
-        self._logger.debug(msg)
+        self.__logger.debug(msg)
 
     def info(self, msg):
-        self._logger.info(msg)
+        self.__logger.info(msg)
 
     def warning(self, msg):
-        self._logger.warning(msg)
+        self.__logger.warning(msg)
 
     def error(self, msg):
-        self._logger.error(msg)
+        self.__logger.error(msg)
 
     def critical(self, msg):
-        self._logger.critical(msg)
+        self.__logger.critical(msg)

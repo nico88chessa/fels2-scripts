@@ -74,81 +74,81 @@ class CoreBean(QObject):
         super().__init__(parent)
 
         # registers
-        self._registersWriteRequest = json.dumps(registersWriteRequestSample, indent=4)
-        self._registersWriteResponse = ""
-        self._registersReadResponse = ""
+        self.__registersWriteRequest = json.dumps(registersWriteRequestSample, indent=4)
+        self.__registersWriteResponse = ""
+        self.__registersReadResponse = ""
 
         # control
-        self._controlWriteRequest = json.dumps(controlWriteRequestSample, indent=4)
-        self._controlWriteResponse = ""
-        self._controlReadResponse = ""
+        self.__controlWriteRequest = json.dumps(controlWriteRequestSample, indent=4)
+        self.__controlWriteResponse = ""
+        self.__controlReadResponse = ""
 
         # output
-        self._outputWriteRequest = json.dumps(outputWriteRequestSample, indent=4)
-        self._outputWriteResponse = ""
-        self._outputReadResponse = ""
+        self.__outputWriteRequest = json.dumps(outputWriteRequestSample, indent=4)
+        self.__outputWriteResponse = ""
+        self.__outputReadResponse = ""
 
         # status
-        self._statusResponse = ""
+        self.__statusResponse = ""
 
     def getRegistersWriteRequest(self):
-        return self._registersWriteRequest
+        return self.__registersWriteRequest
     def setRegistersWriteRequest(self, data):
-        self._registersWriteRequest = data
+        self.__registersWriteRequest = data
         self.registersWriteRequestChanged.emit()
 
     def getRegistersWriteResponse(self):
-        return self._registersWriteResponse
+        return self.__registersWriteResponse
     def setRegistersWriteResponse(self, data):
-        self._registersWriteResponse = data
+        self.__registersWriteResponse = data
         self.registersWriteResponseChanged.emit()
 
     def getRegistersReadResponse(self):
-        return self._registersReadResponse
+        return self.__registersReadResponse
     def setRegistersReadResponse(self, data):
-        self._registersReadResponse = data
+        self.__registersReadResponse = data
         self.registersReadResponseChanged.emit()
 
     def getControlWriteRequest(self):
-        return self._controlWriteRequest
+        return self.__controlWriteRequest
     def setControlWriteRequest(self, data):
-        self._controlWriteRequest = data
+        self.__controlWriteRequest = data
         self.controlWriteRequestChanged.emit()
 
     def getControlWriteResponse(self):
-        return self._controlWriteResponse
+        return self.__controlWriteResponse
     def setControlWriteResponse(self, data):
-        self._controlWriteResponse = data
+        self.__controlWriteResponse = data
         self.controlWriteResponseChanged.emit()
 
     def getControlReadResponse(self):
-        return self._controlReadResponse
+        return self.__controlReadResponse
     def setControlReadResponse(self, data):
-        self._controlReadResponse = data
+        self.__controlReadResponse = data
         self.controlReadResponseChanged.emit()
 
     def getOutputWriteRequest(self):
-        return self._outputWriteRequest
+        return self.__outputWriteRequest
     def setOutputWriteRequest(self, data):
-        self._outputWriteRequest = data
+        self.__outputWriteRequest = data
         self.outputWriteRequestChanged.emit()
 
     def getOutputWriteResponse(self):
-        return self._outputWriteResponse
+        return self.__outputWriteResponse
     def setOutputWriteResponse(self, data):
-        self._outputWriteResponse = data
+        self.__outputWriteResponse = data
         self.outputWriteResponseChanged.emit()
 
     def getOutputReadResponse(self):
-        return self._outputReadResponse
+        return self.__outputReadResponse
     def setOutputReadResponse(self, data):
-        self._outputReadResponse = data
+        self.__outputReadResponse = data
         self.outputReadResponseChanged.emit()
 
     def getStatusResponse(self):
-        return self._statusResponse
+        return self.__statusResponse
     def setStatusResponse(self, data):
-        self._statusResponse = data
+        self.__statusResponse = data
         self.statusResponseChanged.emit()
 
     pRegistersWriteRequest = Property(str, getRegistersWriteRequest, setRegistersWriteRequest, notify=registersWriteRequestChanged)

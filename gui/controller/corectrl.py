@@ -12,7 +12,7 @@ class CoreController(QObject):
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self._bean = None
+        self.__bean = None
         self.__fels2Watcher : None
         self.__fels2Inspector : Fels2Inspector
 
@@ -20,7 +20,7 @@ class CoreController(QObject):
         return self.ppval
 
     def setBean(self, d):
-        self._bean = d
+        self.__bean = d
         self.beanChanged.emit()
 
     @Slot()
@@ -34,10 +34,10 @@ class CoreController(QObject):
         self.__fels2Watcher.finished.connect(self.__fels2Inspector.stopTimer)
         self.__fels2Inspector.fels2Updated.connect(
             lambda r, c, o, s : (
-                self._bean.setRegistersReadResponse(s),
-                self._bean.setControlReadResponse(c),
-                self._bean.setOutputReadResponse(o),
-                self._bean.setStatusReadResponse(s)
+                self.__bean.setRegistersReadResponse(s),
+                self.__bean.setControlReadResponse(c),
+                self.__bean.setOutputReadResponse(o),
+                self.__bean.setStatusReadResponse(s)
             )
         )
 
@@ -45,10 +45,10 @@ class CoreController(QObject):
 
     @Slot()
     def fels2Update(self, r, c, o, s):
-        self._bean.setRegistersReadResponse(s)
-        self._bean.setControlReadResponse(c)
-        self._bean.setOutputReadResponse(o)
-        self._bean.setStatusReadResponse(s)
+        self.__bean.setRegistersReadResponse(s)
+        self.__bean.setControlReadResponse(c)
+        self.__bean.setOutputReadResponse(o)
+        self.__bean.setStatusReadResponse(s)
 
     @Slot()
     def writeRegisters(self):
@@ -56,27 +56,27 @@ class CoreController(QObject):
         return
         f2Ctrl = Fels2Controller()
         f2Ctrl.connect()
-        request = self._bean.getRegistersWriteRequest()
+        request = self.__bean.getRegistersWriteRequest()
         Logger().debug("Request: "+request)
         res = f2Ctrl.sendRequest(request)
-        self._bean.setRegistersWriteResponse(res)
+        self.__bean.setRegistersWriteResponse(res)
 
     @Slot()
     def writeControl(self):
         f2Ctrl = Fels2Controller()
         f2Ctrl.connect()
-        request = self._bean.getControlWriteRequest()
+        request = self.__bean.getControlWriteRequest()
         Logger().debug("Request: " + request)
         res = f2Ctrl.sendRequest(request)
-        self._bean.setControlWriteResponse(res)
+        self.__bean.setControlWriteResponse(res)
 
     @Slot()
     def writeOutput(self):
         f2Ctrl = Fels2Controller()
         f2Ctrl.connect()
-        request = self._bean.getOutputWriteRequest()
+        request = self.__bean.getOutputWriteRequest()
         Logger().debug("Request: " + request)
         res = f2Ctrl.sendRequest(request)
-        self._bean.setOutputWriteResponse(res)
+        self.__bean.setOutputWriteResponse(res)
 
     pBean = Property(CoreBean, getBean, setBean, notify=beanChanged)

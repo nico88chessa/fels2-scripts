@@ -11,17 +11,17 @@ class Fels2Inspector(QObject):
 
     def __init__(self, parent = None):
         super().__init__(parent)
-        self.timer = QTimer(self)
-        self.timer.setInterval(FELS2_POLLING_TIME_MS)
-        self.timer.timeout.connect(self.checkStatus)
+        self.__timer = QTimer()
+        self.__timer.setInterval(FELS2_POLLING_TIME_MS)
+        self.__timer.timeout.connect(self.checkStatus)
 
     @Slot()
     def startTimer(self):
-        self.timer.start()
+        self.__timer.start()
 
     @Slot()
     def stopTimer(self):
-        self.timer.stop()
+        self.__timer.stop()
 
     @Slot()
     def checkStatus(self):
