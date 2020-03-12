@@ -102,7 +102,6 @@ class RequestHandler(socketserver.BaseRequestHandler):
         print("*** PRINT REGISTERS ***")
         print(mem.read(0x0, 44).hexdump(4))
 
-
     def handle_Registers_write(self,dict):
         mem = devmem.DevMem(0x40000000,44)
         mem.debug_set(False)
@@ -379,39 +378,40 @@ class RequestHandler(socketserver.BaseRequestHandler):
 
     def handle(self):
         global shared_string
-        data = self.request.recv(1024)
-        data_string = data.decode("utf-8")
-        data_dict = json.loads(data_string)
-        if data_dict["Request"] != "Status read":
-            print("serving JSON")
-            print(data_dict)
-        try:
-            if data_dict["Request"] == "Registers write":
-                response_dict = self.handle_Registers_write(data_dict)
-            elif data_dict["Request"] == "Registers read":
-                response_dict = self.handle_Registers_read(data_dict)
-            elif data_dict["Request"] == "Output enable":
-                response_dict = self.handle_Output_enable(data_dict)
-            elif data_dict["Request"] == "Output enable read":
-                response_dict = self.handle_Output_enable_read(data_dict)
-            elif data_dict["Request"] == "Control write":
-                response_dict = self.handle_Control_write(data_dict)
-            elif data_dict["Request"] == "Control read":
-                response_dict = self.handle_Control_read(data_dict)
-            elif data_dict["Request"] == "Status read":
-                response_dict = self.handle_Status_read(data_dict)
-            elif data_dict["Request"] == "Data transfer":
-                response_dict = self.handle_Data_write(data_dict)
-            elif data_dict["Request"] == "Data transfer read":
-                response_dict = self.handle_Data_read(data_dict)
-            else:
-                print("REQUEST NOT RECOGNIZED")
+        while (True):
+            data = self.request.recv(1024)
+            data_string = data.decode("utf-8")
+            data_dict = json.loads(data_string)
+            if data_dict["Request"] != "Status read":
+                print("serving JSON")
+                print(data_dict)
+            try:
+                if data_dict["Request"] == "Registers write":
+                    response_dict = self.handle_Registers_write(data_dict)
+                elif data_dict["Request"] == "Registers read":
+                    response_dict = self.handle_Registers_read(data_dict)
+                elif data_dict["Request"] == "Output enable":
+                    response_dict = self.handle_Output_enable(data_dict)
+                elif data_dict["Request"] == "Output enable read":
+                    response_dict = self.handle_Output_enable_read(data_dict)
+                elif data_dict["Request"] == "Control write":
+                    response_dict = self.handle_Control_write(data_dict)
+                elif data_dict["Request"] == "Control read":
+                    response_dict = self.handle_Control_read(data_dict)
+                elif data_dict["Request"] == "Status read":
+                    response_dict = self.handle_Status_read(data_dict)
+                elif data_dict["Request"] == "Data transfer":
+                    response_dict = self.handle_Data_write(data_dict)
+                elif data_dict["Request"] == "Data transfer read":
+                    response_dict = self.handle_Data_read(data_dict)
+                else:
+                    print("REQUEST NOT RECOGNIZED")
+                    response_dict = {"Response code" : 1}
+            except:
+                print("BAD REQUEST")
                 response_dict = {"Response code" : 1}
-        except:
-            print("BAD REQUEST")
-            response_dict = {"Response code" : 1}
-        response = json.dumps(response_dict).encode()
-        self.request.send(response)
+            response = json.dumps(response_dict).encode()
+            self.request.send(response)
         return
 
 class RequestHandler1(socketserver.BaseRequestHandler):
