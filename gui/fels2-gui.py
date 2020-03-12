@@ -1,12 +1,7 @@
-from PySide2.QtQuick import QQuickView
-from PySide2.QtWidgets import QApplication
-
-from PySide2.QtCore import QFile, QUrl
 from PySide2.QtGui import QGuiApplication
 from PySide2.QtQml import QQmlApplicationEngine, qmlRegisterType
 
 from gui.core.logger import Logger
-
 from gui.controller.corectrl import CoreController, CoreBean
 
 import sys

@@ -1,7 +1,7 @@
-import QtQuick 2.0
-import QtQuick.Window 2.0
-import QtQuick.Controls 2.0
-import QtQuick.Layouts 1.3
+import QtQuick 2.14
+import QtQuick.Window 2.14
+import QtQuick.Controls 2.14
+import QtQuick.Layouts 1.11
 
 import com.dv.CoreController 1.0
 import com.dv.CoreBean 1.0
@@ -26,6 +26,9 @@ Window {
     height: 768
     minimumHeight: 768
     minimumWidth: 1024
+    onClosing: {
+        coreController.stopProcess()
+    }
 
     GridLayout {
         id: gridLayout
@@ -58,11 +61,11 @@ Window {
                 }
 
                 ListElement {
-                    name: "STATUS"
+                    name: "OUTPUT"
                 }
 
                 ListElement {
-                    name: "OUTPUT"
+                    name: "STATUS"
                 }
 
                 ListElement {
@@ -162,6 +165,9 @@ Window {
                             readOnly: true
                             font.pointSize: 10
                             font.family: "Ubuntu Mono"
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            selectByMouse: true
                             anchors.fill: parent
                             color: "#FFFFFF"
                             background: Rectangle {
@@ -268,6 +274,9 @@ Window {
                             readOnly: true
                             font.pointSize: 10
                             font.family: "Ubuntu Mono"
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            selectByMouse: true
                             anchors.fill: parent
                             color: "#FFFFFF"
                             background: Rectangle {
@@ -374,6 +383,9 @@ Window {
                             readOnly: true
                             font.pointSize: 10
                             font.family: "Ubuntu Mono"
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            selectByMouse: true
                             anchors.fill: parent
                             color: "#FFFFFF"
                             background: Rectangle {
@@ -457,6 +469,9 @@ Window {
                             readOnly: true
                             font.pointSize: 10
                             font.family: "Ubuntu Mono"
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            selectByMouse: true
                             anchors.fill: parent
                             color: "#FFFFFF"
                             background: Rectangle {

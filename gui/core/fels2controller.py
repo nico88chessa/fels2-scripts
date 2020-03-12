@@ -5,18 +5,18 @@ import socket
 import json
 
 
-
 IP_ADDRESS = "192.168.1.100"
 DIAGNOSTIC_PORT = 8000
 DATA_PORT = 8001
 BUFFER_RECEIVE_SIZE = 1024
+SOCKET_TIMEOUT_SEC = 1
 
 readRegisterMap = {
     "Request": "Registers read"
 }
 
 readControlMap = {
-    "Request": "Control read"
+    "Request": "Control read",
 }
 
 readStatusMap = {
@@ -33,20 +33,23 @@ class Fels2Controller(metaclass=Singleton):
     def __init__(self):
         self.__lock = Lock()
         self.__dataLock = Lock()
-        self.__diagnosticSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__dataSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.__diagnosticSocket : socket.socket
+        self.__dataSocket : socket.socket
         self.__isConnected = False
 
-    def connect(self, forceConnection = False) -> int:
+    def connect(self, forceConnection = False) -> bool:
 
         res = 0
         Logger().debug("Connect socket")
         if self.__isConnected and not forceConnection:
             Logger().info("FELS 2 gia' connessa")
-            return 0
+            return True
 
         with self.__lock:
             try:
+                Logger().info("Creazione diagnostic socket")
+                self.__diagnosticSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.__diagnosticSocket.settimeout(SOCKET_TIMEOUT_SEC)
                 self.__diagnosticSocket.connect((IP_ADDRESS, DIAGNOSTIC_PORT))
             except OSError as msg:
                 Logger().error("Errore connessione diagnostica: " + str(msg))
@@ -54,6 +57,9 @@ class Fels2Controller(metaclass=Singleton):
                 res = 1
 
             try:
+                Logger().info("Creazione data socket")
+                self.__dataSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.__dataSocket.settimeout(SOCKET_TIMEOUT_SEC)
                 self.__dataSocket.connect((IP_ADDRESS, DATA_PORT))
             except OSError as msg:
                 Logger().error("Errore connessione dati: " + str(msg))
@@ -61,12 +67,22 @@ class Fels2Controller(metaclass=Singleton):
                 res = 2
 
         self.__isConnected = res==0
-        return res
+        return self.__isConnected
 
     def disconnect(self):
         with self.__lock:
-            self.__dataSocket.close()
-            self.__diagnosticSocket.close()
+            self.__disconnectInternal()
+
+    def __disconnectInternal(self):
+            Logger().info("Richiesta disconnessione")
+            if self.__diagnosticSocket != None:
+                self.__diagnosticSocket.close()
+                Logger().info("Disconnessione diagnostic socket OK")
+            if self.__dataSocket != None:
+                self.__dataSocket.close()
+                Logger().info("Disconnessione data socket OK")
+            self.__isConnected = False
+            Logger().info("Disconnessione completata")
 
     def sendCommand(self, str):
         pass
@@ -77,11 +93,17 @@ class Fels2Controller(metaclass=Singleton):
             Logger().info("Invio comando read registers")
             strCommand = json.dumps(readRegisterMap, indent=4)
             Logger().debug("Str: "+strCommand)
-            len = self.__diagnosticSocket.sendall(strCommand.encode())
-            Logger().debug("Ricevuto bytes: " + str(len))
-            registers = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            try:
+                len = self.__diagnosticSocket.sendall(strCommand.encode())
+                Logger().debug("Ricevuto bytes: " + str(len))
+                registers = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            except OSError as msg:
+                Logger().error("Errore read registers")
+                Logger().error("Err: " + str(msg))
+                self.__disconnectInternal()
+                return "Errore read registers"
             outputDataJson = json.loads(registers.decode())
-            prettyOutput = json.dumps(outputDataJson, indent=4)
+            prettyOutput = json.dumps(outputDataJson, indent=4, sort_keys=True)
 
         return prettyOutput
 
@@ -91,11 +113,17 @@ class Fels2Controller(metaclass=Singleton):
             Logger().info("Invio comando read control")
             strCommand = json.dumps(readControlMap, indent=4)
             Logger().debug("Str: " + strCommand)
-            len = self.__diagnosticSocket.sendall(strCommand.encode())
-            Logger().debug("Ricevuto bytes: " + str(len))
-            controlData = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            try:
+                len = self.__diagnosticSocket.sendall(strCommand.encode())
+                Logger().debug("Ricevuto bytes: " + str(len))
+                controlData = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            except OSError as msg:
+                Logger().error("Errore read control")
+                Logger().error("Err: " + str(msg))
+                self.__disconnectInternal()
+                return "Errore read control"
             outputDataJson = json.loads(controlData.decode())
-            prettyOutput = json.dumps(outputDataJson, indent=4)
+            prettyOutput = json.dumps(outputDataJson, indent=4, sort_keys=True)
 
         return prettyOutput
 
@@ -105,11 +133,17 @@ class Fels2Controller(metaclass=Singleton):
             Logger().info("Invio comando read status")
             strCommand = json.dumps(readStatusMap, indent=4)
             Logger().debug("Str: " + strCommand)
-            len = self.__diagnosticSocket.sendall(strCommand.encode())
-            Logger().debug("Ricevuto bytes: " + str(len))
-            statusData = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            try:
+                len = self.__diagnosticSocket.sendall(strCommand.encode())
+                Logger().debug("Ricevuto bytes: " + str(len))
+                statusData = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            except OSError as msg:
+                Logger().error("Errore read status")
+                Logger().error("Err: " + str(msg))
+                self.__disconnectInternal()
+                return "Errore read status"
             outputDataJson = json.loads(statusData.decode())
-            prettyOutput = json.dumps(outputDataJson, indent=4)
+            prettyOutput = json.dumps(outputDataJson, indent=4, sort_keys=True)
 
         return prettyOutput
 
@@ -119,11 +153,17 @@ class Fels2Controller(metaclass=Singleton):
             Logger().info("Invio comando read output")
             strCommand = json.dumps(readOutputMap, indent=4)
             Logger().debug("Str: " + strCommand)
-            len = self.__diagnosticSocket.sendall(strCommand.encode())
-            Logger().debug("Ricevuto bytes: " + str(len))
-            outputData = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            try:
+                len = self.__diagnosticSocket.sendall(strCommand.encode())
+                Logger().debug("Ricevuto bytes: " + str(len))
+                outputData = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            except OSError as msg:
+                Logger().error("Errore read output")
+                Logger().error("Err: " + str(msg))
+                self.__disconnectInternal()
+                return "Errore read output"
             outputDataJson = json.loads(outputData.decode())
-            prettyOutput = json.dumps(outputDataJson, indent=4)
+            prettyOutput = json.dumps(outputDataJson, indent=4, sort_keys=True)
 
         return prettyOutput
 
@@ -134,10 +174,17 @@ class Fels2Controller(metaclass=Singleton):
             Logger().debug("Str: " + request)
             data = json.loads(request)
             bytes2Send = json.dumps(data).encode()
-            len = self.__diagnosticSocket.sendall(bytes2Send)
-            Logger().debug("Ricevuto bytes: " + str(len))
-            resultByte = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            try:
+                len = self.__diagnosticSocket.sendall(bytes2Send)
+                Logger().debug("Ricevuto bytes: " + str(len))
+                resultByte = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            except OSError as msg:
+                Logger().error("Errore invio request")
+                Logger().error("Err: " + str(msg))
+                self.__disconnectInternal()
+                return "Errore request"
+
             outputDataJson = json.loads(resultByte.decode())
-            prettyOutput = json.dumps(outputDataJson, indent=4)
+            prettyOutput = json.dumps(outputDataJson, indent=4, sort_keys=True)
 
         return prettyOutput

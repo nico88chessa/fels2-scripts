@@ -9,6 +9,7 @@ Successivamente, aggiungere all'ambiente virtuale i seguenti pacchetti
 <ol>
 <li>./pip install bitarray</li>
 <li>./pip install Pillow</li>
+<li>./pip install pyside2</li>
 </ol>
 
 Per la parte ui, bisogna aggiungere i seguenti pacchetti:
@@ -25,4 +26,11 @@ generazione .py da file .qrc
 generazione eseguibile
 1. andare nella cartella venv\Scripts
 2. eseguire il comando:
-<tt>.\pyinstaller.exe ..\..\main.py -w --distpath ..\..\dist</tt>
+<tt>.\pyinstaller.exe ..\\..\\main.py -w --distpath ..\\..\\dist</tt>
+
+Nota per Pycharm:
+in modalita' debug, i QTimer non funzionano correttamente in multithread con QThread.
+Per farli funzionare, all'interno di PyCharm bisogna disabilitare la voce PyQt:
+File - Settings - Python Debugger - PyQt Compatible NON FLAGGATO
+Peccato che cosi' facendo il debug funziona solamente nel main thread (quindi e' impossibile 
+debuggare in PyCharm in multithreading con Pyside 2 (PyCharm 2019.3))

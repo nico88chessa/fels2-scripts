@@ -13,7 +13,7 @@ registersWriteRequestSample = {
     "Ignore pulses for offset y": 30,
     "Delay VES signal": 0,
     "Ton VES signal": 0,
-    "Enable virtual encoder pulses": True,
+    # "Enable virtual encoder pulses": True,
     "Enable VES pulse": False,
     "Enable ZMV signal": False,
     "ZMV table 0": 0,
@@ -25,8 +25,8 @@ registersWriteRequestSample = {
     "ZMV table 7": 0,
     "ZMV table 6": 0,
     "ZMV Ton": 0,
-    "Enable quadrature counting": True,
-    "Quadrature count direction": True,
+    # "Enable quadrature counting": True,
+    # "Quadrature count direction": True,
     "Index ch A config": 1,
     "Index ch B config": 1,
     "Index ch 0 config": 1,
@@ -74,17 +74,17 @@ class CoreBean(QObject):
         super().__init__(parent)
 
         # registers
-        self.__registersWriteRequest = json.dumps(registersWriteRequestSample, indent=4)
+        self.__registersWriteRequest = json.dumps(registersWriteRequestSample, indent=4, sort_keys=True)
         self.__registersWriteResponse = ""
         self.__registersReadResponse = ""
 
         # control
-        self.__controlWriteRequest = json.dumps(controlWriteRequestSample, indent=4)
+        self.__controlWriteRequest = json.dumps(controlWriteRequestSample, indent=4, sort_keys=True)
         self.__controlWriteResponse = ""
         self.__controlReadResponse = ""
 
         # output
-        self.__outputWriteRequest = json.dumps(outputWriteRequestSample, indent=4)
+        self.__outputWriteRequest = json.dumps(outputWriteRequestSample, indent=4, sort_keys=True)
         self.__outputWriteResponse = ""
         self.__outputReadResponse = ""
 
