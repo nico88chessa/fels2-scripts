@@ -1,6 +1,6 @@
-import QtQuick 2.14
-import QtQuick.Window 2.14
-import QtQuick.Controls 2.14
+import QtQuick 2.12
+import QtQuick.Window 2.12
+import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.11
 
 import com.dv.CoreController 1.0
@@ -117,9 +117,9 @@ Window {
 
         StackLayout {
             id: stackLayout
+            currentIndex: menuList.currentIndex
             Layout.fillHeight: true
             Layout.fillWidth: true
-            currentIndex: menuList.currentIndex
 
             Item {
                 id: itemRegisters
@@ -489,6 +489,150 @@ Window {
                 }
             }
 
+            Item {
+                id: itemData
+
+                ColumnLayout {
+                    id: glData
+                    anchors.fill: parent
+
+                    Item {
+                        id: itemEncoder
+                        Layout.rightMargin: 10
+                        Layout.leftMargin: 10
+                        Layout.fillWidth: true
+                        Layout.minimumHeight: 50
+
+                        RowLayout {
+                            id: rlEncoder
+                            height: 50
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+
+                            TextField {
+                                id: tfEncoder
+                                placeholderText: "Insert map filepath"
+                                Layout.fillWidth: true
+                                selectByMouse: true
+                                selectionColor: "#0B6FAD"
+                                selectedTextColor: "#FFFFFF"
+                                KeyNavigation.tab: tfModulationTable
+                                onEditingFinished: coreBean.pMapFilepath = text
+                            }
+
+                            Button {
+                                id: bEncoder
+                                Layout.minimumWidth: 200
+                                text: qsTr("SEND ENCODER MAP")
+                                onClicked: coreController.sendEncoderMap()
+                            }
+                        }
+                    }
+
+                    Item {
+                        id: itemModulationTable
+                        Layout.rightMargin: 10
+                        Layout.leftMargin: 10
+                        Layout.fillWidth: true
+                        Layout.minimumHeight: 50
+
+                        RowLayout {
+                            id: rlModulationTable
+                            height: 50
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+
+                            TextField {
+                                id: tfModulationTable
+                                placeholderText: "Insert modulation table filepath"
+                                Layout.fillWidth: true
+                                selectByMouse: true
+                                selectionColor: "#0B6FAD"
+                                selectedTextColor: "#FFFFFF"
+                                KeyNavigation.tab: tfImage
+                                onEditingFinished: coreBean.pModulationTableFilepath = text
+                            }
+
+                            Button {
+                                id: bModulationTable
+                                Layout.minimumWidth: 200
+                                text: qsTr("SEND MODULATION TABLE")
+                                onClicked: coreController.sendModulationTableMap()
+                            }
+                        }
+                    }
+
+                    Item {
+                        id: itemImage
+                        Layout.rightMargin: 10
+                        Layout.leftMargin: 10
+                        Layout.fillWidth: true
+                        Layout.minimumHeight: 50
+
+                        RowLayout {
+                            id: rlImage
+                            height: 50
+                            anchors.left: parent.left
+                            anchors.leftMargin: 0
+                            anchors.right: parent.right
+                            anchors.rightMargin: 0
+
+                            TextField {
+                                id: tfImage
+                                placeholderText: "Insert image filepath"
+                                Layout.fillWidth: true
+                                selectByMouse: true
+                                selectionColor: "#0B6FAD"
+                                selectedTextColor: "#FFFFFF"
+                                KeyNavigation.tab: tfEncoder
+                                onEditingFinished: coreBean.pImageFilepath = text
+                            }
+
+                            Button {
+                                id: bImage
+                                Layout.minimumWidth: 200
+                                text: qsTr("SEND IMAGE")
+                                onClicked: coreController.sendImage()
+                            }
+                        }
+                    }
+
+                    Item {
+                        id: test
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        TextArea {
+                            id: taDataResponse
+                            readOnly: true
+                            font.pointSize: 10
+                            font.family: "Ubuntu Mono"
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            selectByMouse: true
+                            anchors.fill: parent
+                            color: "#FFFFFF"
+                            background: Rectangle {
+                                color: "#000000"
+                            }
+                        }
+
+                    }
+
+
+
+                }
+
+            }
+
+
+
         }
     }
 }
+
+

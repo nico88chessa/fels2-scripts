@@ -95,4 +95,18 @@ class CoreController(QObject):
         else:
             self.__bean.setRegistersWriteResponse("Problema connessione socket")
 
+    @Slot()
+    def sendEncoderMap(self):
+        Logger().info("Sending encoder map")
+
+    @Slot()
+    def sendModulationTableMap(self):
+        Logger().info("Sending modulation table")
+        with open('workfile') as f:
+            read_data = f.read()
+
+    @Slot()
+    def sendImage(self):
+        Logger().info("Sending image")
+
     pBean = Property(CoreBean, getBean, setBean, notify=beanChanged)

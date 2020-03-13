@@ -69,6 +69,9 @@ class CoreBean(QObject):
     outputWriteResponseChanged = Signal()
     outputReadResponseChanged = Signal()
     statusResponseChanged = Signal()
+    mapFilepathChanged = Signal()
+    modulationTableFilepathChanged = Signal()
+    imageFilepathChanged = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -90,6 +93,11 @@ class CoreBean(QObject):
 
         # status
         self.__statusResponse = ""
+
+        # streaming
+        self.__mapFilepath = ""
+        self.__modulationTableFilepath = ""
+        self.__imageFilepath = ""
 
     def getRegistersWriteRequest(self):
         return self.__registersWriteRequest
@@ -151,13 +159,48 @@ class CoreBean(QObject):
         self.__statusResponse = data
         self.statusResponseChanged.emit()
 
-    pRegistersWriteRequest = Property(str, getRegistersWriteRequest, setRegistersWriteRequest, notify=registersWriteRequestChanged)
-    pRegistersWriteResponse = Property(str, getRegistersWriteResponse, setRegistersWriteResponse, notify=registersWriteResponseChanged)
-    pRegistersReadResponse = Property(str, getRegistersReadResponse, setRegistersReadResponse, notify=registersReadResponseChanged)
-    pControlWriteRequest = Property(str, getControlWriteRequest, setControlWriteRequest, notify=controlWriteRequestChanged)
-    pControlWriteResponse = Property(str, getControlWriteResponse, setControlWriteResponse, notify=controlWriteResponseChanged)
-    pControlReadResponse = Property(str, getControlReadResponse, setControlReadResponse, notify=controlReadResponseChanged)
-    pOutputWriteRequest = Property(str, getOutputWriteRequest, setOutputWriteRequest, notify=outputWriteRequestChanged)
-    pOutputWriteResponse = Property(str, getOutputWriteResponse, setOutputWriteResponse, notify=outputWriteResponseChanged)
-    pOutputReadResponse = Property(str, getOutputReadResponse, setOutputReadResponse, notify=outputReadResponseChanged)
-    pStatusResponse = Property(str, getStatusResponse, setStatusResponse, notify=statusResponseChanged)
+    def getMapFilepath(self):
+        return self.__mapFilepath
+    def setMapFilepath(self, value):
+        self.__mapFilepath = value
+        self.mapFilepathChanged.emit()
+
+    def getModulationTableFilepath(self):
+        return self.__modulationTableFilepath
+    def setModulationTableFilepath(self, value):
+        self.__modulationTableFilepath = value
+        self.modulationTableFilepathChanged.emit()
+
+    def getImageFilepath(self):
+        return self.__imageFilepath
+    def setImageFilepath(self, value):
+        self.__imageFilepath = value
+        self.imageFilepathChanged.emit()
+
+
+    pRegistersWriteRequest = Property(str, getRegistersWriteRequest, setRegistersWriteRequest,
+                                      notify=registersWriteRequestChanged)
+    pRegistersWriteResponse = Property(str, getRegistersWriteResponse, setRegistersWriteResponse,
+                                       notify=registersWriteResponseChanged)
+    pRegistersReadResponse = Property(str, getRegistersReadResponse, setRegistersReadResponse,
+                                      notify=registersReadResponseChanged)
+    pControlWriteRequest = Property(str, getControlWriteRequest, setControlWriteRequest,
+                                    notify=controlWriteRequestChanged)
+    pControlWriteResponse = Property(str, getControlWriteResponse, setControlWriteResponse,
+                                     notify=controlWriteResponseChanged)
+    pControlReadResponse = Property(str, getControlReadResponse, setControlReadResponse,
+                                    notify=controlReadResponseChanged)
+    pOutputWriteRequest = Property(str, getOutputWriteRequest, setOutputWriteRequest,
+                                   notify=outputWriteRequestChanged)
+    pOutputWriteResponse = Property(str, getOutputWriteResponse, setOutputWriteResponse,
+                                    notify=outputWriteResponseChanged)
+    pOutputReadResponse = Property(str, getOutputReadResponse, setOutputReadResponse,
+                                   notify=outputReadResponseChanged)
+    pStatusResponse = Property(str, getStatusResponse, setStatusResponse,
+                               notify=statusResponseChanged)
+    pMapFilepath = Property(str, getMapFilepath, setMapFilepath,
+                            notify=mapFilepathChanged)
+    pModulationTableFilepath = Property(str, getModulationTableFilepath, setModulationTableFilepath,
+                                        notify=modulationTableFilepathChanged)
+    pImageFilepath = Property(str, getImageFilepath, setImageFilepath,
+                              notify=imageFilepathChanged)
