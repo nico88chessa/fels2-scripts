@@ -27,6 +27,25 @@ readOutputMap = {
     "Request": "Output enable read"
 }
 
+encoderMapTransferRequest = {
+    "Request": "Data transfer",
+    "Region": "Encoder map1"
+}
+
+imageTransferRequest = {
+    "Request": "Data transfer",
+    "Region": "Image"
+}
+
+modulationTableTransferRequest = {
+    "Request": "Data transfer",
+    "Region": "Modulation table"
+}
+
+readTransferRequest = {
+    "Request": "Data transfer read"
+}
+
 
 class Fels2Controller(metaclass=Singleton):
 
@@ -188,3 +207,11 @@ class Fels2Controller(metaclass=Singleton):
             prettyOutput = json.dumps(outputDataJson, indent=4, sort_keys=True)
 
         return prettyOutput
+
+    def sendData(self, data):
+
+        Logger().info("Invio dati")
+        with self.__dataLock:
+            res = self.__dataSocket.sendall(data)
+
+        Logger().info("Dati inviati")

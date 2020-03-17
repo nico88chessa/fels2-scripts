@@ -26,9 +26,9 @@ Window {
     height: 768
     minimumHeight: 768
     minimumWidth: 1024
-    onClosing: {
-        coreController.stopProcess()
-    }
+//    onClosing: {
+//        coreController.stopProcess()
+//    }
 
     GridLayout {
         id: gridLayout
@@ -606,18 +606,34 @@ Window {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
-                        TextArea {
-                            id: taDataResponse
-                            readOnly: true
-                            font.pointSize: 10
-                            font.family: "Ubuntu Mono"
-                            selectionColor: "#0B6FAD"
-                            selectedTextColor: "#FFFFFF"
-                            selectByMouse: true
+                        ScrollView {
+                            id: svDataResponse
                             anchors.fill: parent
-                            color: "#FFFFFF"
-                            background: Rectangle {
-                                color: "#000000"
+//                            clip: true
+
+                            TextArea {
+                                id: taDataResponse
+                                readOnly: false
+                                font.pointSize: 10
+                                font.family: "Ubuntu Mono"
+                                selectionColor: "#0B6FAD"
+                                selectedTextColor: "#FFFFFF"
+                                selectByMouse: true
+                                color: "#FFFFFF"
+
+                                background: Rectangle {
+                                    color: "#000000"
+                                }
+
+                                Connections {
+                                    target: coreController
+                                    function onUpdateTransferConsole(outputData) {
+                                        if (taDataResponse.lineCount > 200) {
+                                            taDataResponse.clear();
+                                        }
+                                        taDataResponse.append(outputData)
+                                    }
+                                }
                             }
                         }
 
