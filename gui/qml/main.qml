@@ -521,7 +521,8 @@ Window {
                                 selectionColor: "#0B6FAD"
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfModulationTable
-                                onEditingFinished: coreBean.pMapFilepath = text
+//                                onEditingFinished: coreBean.pMapFilepath = text
+                                onTextChanged: coreBean.pMapFilepath = text
                             }
 
                             FileDialog {
@@ -581,7 +582,8 @@ Window {
                                 selectionColor: "#0B6FAD"
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfImage
-                                onEditingFinished: coreBean.pModulationTableFilepath = text
+//                                onEditingFinished: coreBean.pModulationTableFilepath = text
+                                onTextChanged: coreBean.pModulationTableFilepath = text
                             }
 
                             FileDialog {
@@ -641,7 +643,8 @@ Window {
                                 selectionColor: "#0B6FAD"
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfEncoder
-                                onEditingFinished: coreBean.pImageFilepath = text
+//                                onEditingFinished: coreBean.pImageFilepath = text
+                                onTextChanged: coreBean.pImageFilepath = text
                             }
 
                             FileDialog {

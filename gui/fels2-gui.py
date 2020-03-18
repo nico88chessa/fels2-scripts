@@ -12,7 +12,7 @@ import sys
 if __name__ == "__main__":
 
     Logger().info("Avvio applicazione FELS2")
-    currentPath = os.path.dirname(__file__)
+    currentPath = os.path.dirname(os.path.abspath(__file__))
 
     app = QApplication(sys.argv)
 

@@ -1,3 +1,5 @@
+import os
+
 from bitarray import bitarray
 from array import array
 import struct
@@ -66,7 +68,9 @@ if __name__ == "__main__":
         elif outputMode == 3:
             encMapEndianess = encodeUIntMap
     '''
-    with open("./output/virtualEncoder.map", "wb") as f:
+    currentPath = os.path.dirname(os.path.abspath(__file__))
+    destFile = currentPath+"/./output/virtualEncoder.map"
+    with open(destFile, "wb") as f:
         encMapEndianess = encodeUIntMap
         f.write(encMapEndianess.tobytes())
 
