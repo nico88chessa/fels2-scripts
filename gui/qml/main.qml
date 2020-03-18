@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.11
+import QtQuick.Dialogs 1.3
 
 import com.dv.CoreController 1.0
 import com.dv.CoreBean 1.0
@@ -26,9 +27,9 @@ Window {
     height: 768
     minimumHeight: 768
     minimumWidth: 1024
-//    onClosing: {
-//        coreController.stopProcess()
-//    }
+    onClosing: {
+        coreController.stopProcess()
+    }
 
     GridLayout {
         id: gridLayout
@@ -513,6 +514,7 @@ Window {
 
                             TextField {
                                 id: tfEncoder
+                                font.family: "Ubuntu Mono Regular"
                                 placeholderText: "Insert map filepath"
                                 Layout.fillWidth: true
                                 selectByMouse: true
@@ -520,6 +522,30 @@ Window {
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfModulationTable
                                 onEditingFinished: coreBean.pMapFilepath = text
+                            }
+
+                            FileDialog {
+                                id: fdEncoder
+                                title: "Selezione mappa encoder"
+                                selectMultiple: false
+                                modality: Qt.ApplicationModal
+                                onAccepted: {
+                                    console.log("You chose: " + fileUrl)
+                                    tfEncoder.text = fileUrl.toString().replace("file://", "")
+                                }
+                            }
+
+                            Button {
+                                id: bEncoderChoose
+                                Layout.minimumWidth: 30
+                                Layout.maximumWidth: 30
+                                text: qsTr("...")
+                                onClicked: {
+                                    var path = Qt.resolvedUrl("./../../data-generators")
+                                    console.log(path)
+                                    fdEncoder.folder = Qt.resolvedUrl(path)
+                                    fdEncoder.open()
+                                }
                             }
 
                             Button {
@@ -548,6 +574,7 @@ Window {
 
                             TextField {
                                 id: tfModulationTable
+                                font.family: "Ubuntu Mono Regular"
                                 placeholderText: "Insert modulation table filepath"
                                 Layout.fillWidth: true
                                 selectByMouse: true
@@ -555,6 +582,30 @@ Window {
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfImage
                                 onEditingFinished: coreBean.pModulationTableFilepath = text
+                            }
+
+                            FileDialog {
+                                id: fdModulationTable
+                                title: "Selezione tabella modulazione"
+                                selectMultiple: false
+                                modality: Qt.ApplicationModal
+                                onAccepted: {
+                                    console.log("You chose: " + fileUrl)
+                                    tfModulationTable.text = fileUrl.toString().replace("file://", "")
+                                }
+                            }
+
+                            Button {
+                                id: bModulationTableChoose
+                                Layout.minimumWidth: 30
+                                Layout.maximumWidth: 30
+                                text: qsTr("...")
+                                onClicked: {
+                                    var path = Qt.resolvedUrl("./../../data-generators")
+                                    console.log(path)
+                                    fdModulationTable.folder = Qt.resolvedUrl(path)
+                                    fdModulationTable.open()
+                                }
                             }
 
                             Button {
@@ -583,6 +634,7 @@ Window {
 
                             TextField {
                                 id: tfImage
+                                font.family: "Ubuntu Mono Regular"
                                 placeholderText: "Insert image filepath"
                                 Layout.fillWidth: true
                                 selectByMouse: true
@@ -590,6 +642,30 @@ Window {
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfEncoder
                                 onEditingFinished: coreBean.pImageFilepath = text
+                            }
+
+                            FileDialog {
+                                id: fdImage
+                                title: "Selezione immagine"
+                                selectMultiple: false
+                                modality: Qt.ApplicationModal
+                                onAccepted: {
+                                    console.log("You chose: " + fileUrl)
+                                    tfImage.text = fileUrl.toString().replace("file://", "")
+                                }
+                            }
+
+                            Button {
+                                id: bImageChoose
+                                Layout.minimumWidth: 30
+                                Layout.maximumWidth: 30
+                                text: qsTr("...")
+                                onClicked: {
+                                    var path = Qt.resolvedUrl("./../../data-generators")
+                                    console.log(path)
+                                    fdImage.folder = Qt.resolvedUrl(path)
+                                    fdImage.open()
+                                }
                             }
 
                             Button {
