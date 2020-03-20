@@ -9,7 +9,8 @@ IP_ADDRESS = "192.168.1.100"
 DIAGNOSTIC_PORT = 8000
 DATA_PORT = 8001
 BUFFER_RECEIVE_SIZE = 1024
-SOCKET_TIMEOUT_SEC = 1
+CTRL_SOCKET_TIMEOUT_SEC = 1
+DATA_SOCKET_TIMEOUT_SEC = 5
 
 readRegisterMap = {
     "Request": "Registers read"
@@ -68,7 +69,7 @@ class Fels2Controller(metaclass=Singleton):
             try:
                 Logger().info("Creazione diagnostic socket")
                 self.__diagnosticSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.__diagnosticSocket.settimeout(SOCKET_TIMEOUT_SEC)
+                self.__diagnosticSocket.settimeout(CTRL_SOCKET_TIMEOUT_SEC)
                 self.__diagnosticSocket.connect((IP_ADDRESS, DIAGNOSTIC_PORT))
             except OSError as msg:
                 Logger().error("Errore connessione diagnostica: " + str(msg))
@@ -78,7 +79,7 @@ class Fels2Controller(metaclass=Singleton):
             try:
                 Logger().info("Creazione data socket")
                 self.__dataSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.__dataSocket.settimeout(SOCKET_TIMEOUT_SEC)
+                self.__dataSocket.settimeout(DATA_SOCKET_TIMEOUT_SEC)
                 self.__dataSocket.connect((IP_ADDRESS, DATA_PORT))
             except OSError as msg:
                 Logger().error("Errore connessione dati: " + str(msg))

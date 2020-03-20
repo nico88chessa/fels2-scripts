@@ -1,6 +1,6 @@
 import os
 
-from bitarray import bitarray
+# from bitarray import bitarray
 from array import array
 import struct
 import math
@@ -13,10 +13,13 @@ if __name__ == "__main__":
 
     # multiplo del byte, altrimenti bitarray
     # ha problemi nella conversione con endianess
+
+    # 19/03/2020 ma anche multiplo di 4 byte, perche' un
+    # elemento della FELS2 e' pari a 32 bit = 4 byte
     pulsesEncoderBytes = math.ceil(pulsesEncoder / 8)
     pulsesEncoderInts = math.ceil(pulsesEncoder / (8*SLOT_SIZE_BYTE)) # long int in python e' 4 byte
-    encoderMap = bitarray(pulsesEncoderBytes * 8)
-    encoderMap.setall(False)
+    # encoderMap = bitarray(pulsesEncoderBytes * 8)
+    # encoderMap.setall(False)
     encodeUIntMap = array("I", [0]*pulsesEncoderInts)
 
     print("single item size: "+str(encodeUIntMap.itemsize))
@@ -32,7 +35,7 @@ if __name__ == "__main__":
         pulseDistance = int (input("Inserire spaziatura impulsi encoder virtuale: "))
         pulseDistance += 1
         for i in range(0, pulsesEncoder, pulseDistance):
-            encoderMap[i] = True
+            # encoderMap[i] = True
             intPos = int (i / (SLOT_SIZE_BYTE*8))
             bitOffset = int (i % (SLOT_SIZE_BYTE*8))
             encodeUIntMap[intPos] |= 0x01 << bitOffset
@@ -43,7 +46,7 @@ if __name__ == "__main__":
         step = float(pulsesEncoder / pulsesVirtualEncoder)
         for i in range(pulsesVirtualEncoder):
             position = round(step * i)
-            encoderMap[position] = True
+            # encoderMap[position] = True
             intPos = int(i / (SLOT_SIZE_BYTE*8))
             bitOffset = int(i % (SLOT_SIZE_BYTE*8))
             encodeUIntMap[intPos] |= 0x01 << bitOffset

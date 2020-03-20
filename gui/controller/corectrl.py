@@ -185,7 +185,7 @@ class CoreController(QObject):
             self.updateTransferConsole.emit("File: " + imagePath + " non trovato")
             return
 
-        Logger().info("Modulation table map letta correttamente")
+        Logger().info("Immagine letta correttamente")
 
         f2Ctrl = Fels2Controller()
         if f2Ctrl.connect():

@@ -15,10 +15,10 @@ if __name__ == "__main__":
 
     try:
         print("Size constraints (1 elemento = 4 byte, BURST=64):\n"
-              "1. dimensione > 64*10 elementi\n"
+              "1. dimensione > 64*10 elementi = 2560 byte\n"
               "2. dimensione > 2 colonne intere (tutti i bit del VE a 1)\n"
-              "3. dimensione % (element*BURST = 256 bytes) == 0\n"
-              "4. Max dimensione DDR per dati =~ 550 MB = 550*1024*1024 bytes")
+              "3. dimensione % (element*BURST = 256 byte) == 0\n"
+              "4. Max dimensione DDR per dati =~ 550 MB = 550*1024*1024 byte")
         dataSize = int(input("Dimensione chunk dati [MB]: "))
     except ValueError as ve:
         print("Errore conversione: "+str(ve))
@@ -28,8 +28,7 @@ if __name__ == "__main__":
     print("Dimensione in byte: "+str(dataSize))
 
     try:
-        fullpath = os.path.dirname(os.path.abspath(filepath))
-        path, filename = os.path.split(fullpath)
+        path, filename = os.path.split(os.path.abspath(filepath))
         name, extension = os.path.splitext(filename)
 
         destpath = os.path.dirname(os.path.abspath(__file__)) + "/./output"
