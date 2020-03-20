@@ -72,6 +72,10 @@ Window {
                 ListElement {
                     name: "DATA TRANSFER"
                 }
+
+                ListElement {
+                    name: "UTILS"
+                }
             }
 
             Component {
@@ -521,7 +525,7 @@ Window {
                                 selectionColor: "#0B6FAD"
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfModulationTable
-//                                onEditingFinished: coreBean.pMapFilepath = text
+                                //                                onEditingFinished: coreBean.pMapFilepath = text
                                 onTextChanged: coreBean.pMapFilepath = text
                             }
 
@@ -582,7 +586,7 @@ Window {
                                 selectionColor: "#0B6FAD"
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfImage
-//                                onEditingFinished: coreBean.pModulationTableFilepath = text
+                                //                                onEditingFinished: coreBean.pModulationTableFilepath = text
                                 onTextChanged: coreBean.pModulationTableFilepath = text
                             }
 
@@ -643,7 +647,7 @@ Window {
                                 selectionColor: "#0B6FAD"
                                 selectedTextColor: "#FFFFFF"
                                 KeyNavigation.tab: tfEncoder
-//                                onEditingFinished: coreBean.pImageFilepath = text
+                                //                                onEditingFinished: coreBean.pImageFilepath = text
                                 onTextChanged: coreBean.pImageFilepath = text
                             }
 
@@ -688,7 +692,7 @@ Window {
                         ScrollView {
                             id: svDataResponse
                             anchors.fill: parent
-//                            clip: true
+                            //                            clip: true
 
                             TextArea {
                                 id: taDataResponse
@@ -717,17 +721,176 @@ Window {
                         }
 
                     }
-
-
-
                 }
-
             }
 
 
+            Item {
+                id: itemUtils
+
+                GridLayout {
+                    id: glUtils
+                    anchors.rightMargin: 10
+                    anchors.leftMargin: 10
+                    anchors.bottomMargin: 10
+                    anchors.topMargin: 10
+                    anchors.fill: parent
+
+                    GridLayout {
+                        id: glUtilsEdit
+                        columnSpacing: 10
+                        columns: 2
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+
+                        Text {
+                            id: tEncoderPulses
+                            text: qsTr("Impulsi encoder")
+                            font.pixelSize: 12
+                        }
+
+                        TextField {
+                            id: tfEncoderPulses
+                            text: qsTr("")
+                            font.family: "Ubuntu Mono Regular"
+                            selectByMouse: true
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            horizontalAlignment: Text.AlignRight
+                            validator: IntValidator {
+                                bottom: 0
+                                top: 8388608
+                            }
+                            onEditingFinished: coreBean.pEncoderPulses = text
+                        }
+
+                        Text {
+                            id: tFileChunkSize
+                            text: qsTr("Chunk file size [MB]")
+                            font.pixelSize: 12
+                        }
+
+                        TextField {
+                            id: tfFileChunkSize
+                            text: qsTr("")
+                            font.family: "Ubuntu Mono Regular"
+                            selectByMouse: true
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            horizontalAlignment: Text.AlignRight
+                            validator: IntValidator {
+                                bottom: 0
+                            }
+                            onEditingFinished: coreBean.pFileChunkSize = text
+                        }
+
+                        Item {
+                            id: element1
+                            width: 200
+                            height: 200
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.columnSpan: 2
+                        }
+
+                    }
+
+                    GridLayout {
+                        id: glUtilsReadOnly
+                        columnSpacing: 10
+                        columns: 2
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+
+                        Text {
+                            id: tPeriodTestTime
+                            text: qsTr("Period test time [ns]")
+                            font.pixelSize: 12
+                        }
+
+                        TextField {
+                            id: tfPeriodTestTime
+                            text: coreBean.pPeriodTestTime
+                            font.family: "Ubuntu Mono Regular"
+                            selectByMouse: true
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            horizontalAlignment: Text.AlignRight
+                            readOnly: true
+                        }
+
+                        Text {
+                            id: tNumPeriodChannel
+                            text: qsTr("Number periods channel")
+                            font.pixelSize: 12
+                        }
+
+                        TextField {
+                            id: tfNumPeriodChannel
+                            text: Number(coreBean.pNumPeriodChannel).toLocaleString(Qt.locale(), "f", 3)
+                            font.family: "Ubuntu Mono Regular"
+                            selectByMouse: true
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            horizontalAlignment: Text.AlignRight
+                            readOnly: true
+                        }
+
+                        Text {
+                            id: tRotationTestTime
+                            text: qsTr("Rotation test time [us]")
+                            font.pixelSize: 12
+                        }
+
+                        TextField {
+                            id: tfRotationTestTime
+                            text: (Number(coreBean.pRotationTestTime)/1000).toLocaleString(Qt.locale(), "f", 3)
+                            font.family: "Ubuntu Mono Regular"
+                            selectByMouse: true
+                            selectionColor:  "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            horizontalAlignment: Text.AlignRight
+                            readOnly: true
+                        }
+
+                        Text {
+                            id: tDDRBlockSize
+                            text: qsTr("DDR block size [elem]")
+                            font.pixelSize: 12
+                        }
+
+                        TextField {
+                            id: tfDDRBlockSize
+                            text: coreBean.pDDRBlockSize
+                            font.family: "Ubuntu Mono Regular"
+                            selectByMouse: true
+                            selectionColor: "#0B6FAD"
+                            selectedTextColor: "#FFFFFF"
+                            horizontalAlignment: Text.AlignRight
+                            readOnly: true
+                        }
+
+                        Item {
+                            id: element3
+                            width: 200
+                            height: 200
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            Layout.columnSpan: 2
+                        }
+
+                    }
+                }
+            }
 
         }
     }
 }
 
 
+
+/*##^##
+Designer {
+    D{i:97;anchors_height:100;anchors_width:100;anchors_x:143;anchors_y:179}
+}
+##^##*/

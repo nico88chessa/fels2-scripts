@@ -7,6 +7,8 @@ from gui.core.fels2controller import Fels2Controller
 import gui.core.fels2controller as F2CTRL
 from gui.core.fels2inspector import Fels2Inspector
 
+FELS2_PERIOD_TIME = 5120
+
 
 class CoreController(QObject):
 
@@ -26,6 +28,8 @@ class CoreController(QObject):
     def setBean(self, d):
         self.__bean = d
         self.beanChanged.emit()
+        self.__bean.encoderPulsesChanged.connect(self.updateUtilsValues)
+        self.__bean.fileChunkSizeChanged.connect(self.updateUtilsValues)
 
     @Slot()
     def stopProcess(self):
@@ -208,5 +212,14 @@ class CoreController(QObject):
 
         else:
             self.updateTransferConsole.emit("Invio image KO")
+
+    @Slot()
+    def updateUtilsValues(self):
+        encoderPulses = int(self.__bean.getEncoderPulses())
+        fileChunk = int(self.__bean.getFileChunkSize())
+        self.__bean.setPeriodTestTime(FELS2_PERIOD_TIME)
+        self.__bean.setNumPeriodChannel(encoderPulses/4)
+        self.__bean.setRotationTestTime(encoderPulses/4*FELS2_PERIOD_TIME)
+        self.__bean.setDDRBlockSize(fileChunk*1024**2/4)
 
     pBean = Property(CoreBean, getBean, setBean, notify=beanChanged)

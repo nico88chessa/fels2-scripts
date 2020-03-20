@@ -30,13 +30,6 @@ Per installare una specifica versione, bisogna dare il comando:
   es.: pip install PySide2==5.14.1
 </tt>
 
-Per la parte ui, bisogna aggiungere i seguenti pacchetti:
-
-Pacchetti da installare nell'ambiente virtuale:
-<ol>
-  <li>pip install pyside2 (versione utilizzata: 5.14.1)</li>
-</ol>
-
 Comandi utili:
 generazione .py da file .qrc
 <tt>.\pyside2-rcc.exe C:\Users\nicola\workspace\csv-synchronizer\resources.qrc -o C:\Users\nicola\workspace\csv-synchronizer\resources.py</tt>

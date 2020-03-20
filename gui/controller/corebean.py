@@ -72,6 +72,12 @@ class CoreBean(QObject):
     mapFilepathChanged = Signal()
     modulationTableFilepathChanged = Signal()
     imageFilepathChanged = Signal()
+    encoderPulsesChanged = Signal()
+    fileChunkSizeChanged = Signal()
+    periodTestTimeChanged = Signal()
+    numPeriodChannelChanged = Signal()
+    rotationTestTimeChanged = Signal()
+    DDRBlockSizeChanged = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -98,6 +104,14 @@ class CoreBean(QObject):
         self.__mapFilepath = ""
         self.__modulationTableFilepath = ""
         self.__imageFilepath = ""
+
+        # utils
+        self.__encoderPulses = 0
+        self.__fileChunkSize = 0
+        self.__periodTestTime = 5120
+        self.__numPeriodChannel = 0
+        self.__rotationTestTime = 0
+        self.__DDRBlockSize = 0
 
     def getRegistersWriteRequest(self):
         return self.__registersWriteRequest
@@ -177,6 +191,41 @@ class CoreBean(QObject):
         self.__imageFilepath = value
         self.imageFilepathChanged.emit()
 
+    def getEncoderPulses(self):
+        return self.__encoderPulses
+    def setEncoderPulses(self, value):
+        self.__encoderPulses = value
+        self.encoderPulsesChanged.emit()
+
+    def getFileChunkSize(self):
+        return self.__fileChunkSize
+    def setFileChunkSize(self, value):
+        self.__fileChunkSize = value
+        self.fileChunkSizeChanged.emit()
+
+    def getPeriodTestTime(self):
+        return self.__periodTestTime
+    def setPeriodTestTime(self, value):
+        self.__periodTestTime = value
+        self.periodTestTimeChanged.emit()
+
+    def getNumPeriodChannel(self):
+        return self.__numPeriodChannel
+    def setNumPeriodChannel(self, value):
+        self.__numPeriodChannel = value
+        self.numPeriodChannelChanged.emit()
+
+    def getRotationTestTime(self):
+        return self.__rotationTestTime
+    def setRotationTestTime(self, value):
+        self.__rotationTestTime = value
+        self.rotationTestTimeChanged.emit()
+
+    def getDDRBlockSize(self):
+        return self.__DDRBlockSize
+    def setDDRBlockSize(self, value):
+        self.__DDRBlockSize = value
+        self.DDRBlockSizeChanged.emit()
 
     pRegistersWriteRequest = Property(str, getRegistersWriteRequest, setRegistersWriteRequest,
                                       notify=registersWriteRequestChanged)
@@ -204,3 +253,15 @@ class CoreBean(QObject):
                                         notify=modulationTableFilepathChanged)
     pImageFilepath = Property(str, getImageFilepath, setImageFilepath,
                               notify=imageFilepathChanged)
+    pEncoderPulses = Property(int, getEncoderPulses, setEncoderPulses,
+                              notify=encoderPulsesChanged)
+    pFileChunkSize = Property(int, getFileChunkSize, setFileChunkSize,
+                              notify=fileChunkSizeChanged)
+    pPeriodTestTime = Property(int, getPeriodTestTime, setPeriodTestTime,
+                               notify=periodTestTimeChanged)
+    pNumPeriodChannel = Property(float, getNumPeriodChannel, setNumPeriodChannel,
+                                 notify=numPeriodChannelChanged)
+    pRotationTestTime = Property(float, getRotationTestTime, setRotationTestTime,
+                                 notify=rotationTestTimeChanged)
+    pDDRBlockSize = Property(int, getDDRBlockSize, setDDRBlockSize,
+                             notify=DDRBlockSizeChanged)
