@@ -278,6 +278,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 reg = reg + 1
                 status_dict["Print finished"] = False
                 status_dict["Print paused"] = False
+                region_dict["Image"] = 1
         if "Update register" in dict:
             control_dict["Update register"] = dict["Update register"]
             if dict["Update register"] == True:
@@ -489,7 +490,13 @@ class IRQThread (Thread):
             if (finished != 0):
                 status_dict["Print finished"] = True
                 a = mem1.read(0xAC,1)[0x0] #WALKAROUND
-                mem1.write(0xA4,[(1024)])
+                mem1.write(0xA4,[(1024+2048+512)])
+            qdr = mem1.read(0x68,1)[0x0]
+            if (qdr != 0 and qdr != 8):
+                print("Quadrature irq")
+                print(qdr)
+                a = mem1.read(0xAC,1)[0x0] #WALKAROUND
+                mem1.write(0xA4,[(16+32+64+128)])
             time_2 = time.time()
             print(sts)
             print ("time to serve irq  :{0:.3f}".format((time_2-time_1)*1000.0) + "[msec]")
