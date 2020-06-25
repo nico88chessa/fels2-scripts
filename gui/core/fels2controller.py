@@ -76,15 +76,15 @@ class Fels2Controller(metaclass=Singleton):
                 self.__diagnosticSocket.close()
                 res = 1
 
-            try:
-                Logger().info("Creazione data socket")
-                self.__dataSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.__dataSocket.settimeout(DATA_SOCKET_TIMEOUT_SEC)
-                self.__dataSocket.connect((IP_ADDRESS, DATA_PORT))
-            except OSError as msg:
-                Logger().error("Errore connessione dati: " + str(msg))
-                self.__dataSocket.close()
-                res = 2
+            # try:
+            #     Logger().info("Creazione data socket")
+            #     self.__dataSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            #     self.__dataSocket.settimeout(DATA_SOCKET_TIMEOUT_SEC)
+            #     self.__dataSocket.connect((IP_ADDRESS, DATA_PORT))
+            # except OSError as msg:
+            #     Logger().error("Errore connessione dati: " + str(msg))
+            #     self.__dataSocket.close()
+            #     res = 2
 
         self.__isConnected = res==0
         return self.__isConnected
@@ -98,9 +98,9 @@ class Fels2Controller(metaclass=Singleton):
             if self.__diagnosticSocket != None:
                 self.__diagnosticSocket.close()
                 Logger().info("Disconnessione diagnostic socket OK")
-            if self.__dataSocket != None:
-                self.__dataSocket.close()
-                Logger().info("Disconnessione data socket OK")
+            # if self.__dataSocket != None:
+            #     self.__dataSocket.close()
+            #     Logger().info("Disconnessione data socket OK")
             self.__isConnected = False
             Logger().info("Disconnessione completata")
 
@@ -213,6 +213,20 @@ class Fels2Controller(metaclass=Singleton):
 
         Logger().info("Invio dati")
         with self.__dataLock:
+            try:
+                Logger().info("Creazione data socket")
+                self.__dataSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.__dataSocket.settimeout(DATA_SOCKET_TIMEOUT_SEC)
+                self.__dataSocket.connect((IP_ADDRESS, DATA_PORT))
+            except OSError as msg:
+                Logger().error("Errore connessione dati: " + str(msg))
+                self.__dataSocket.close()
+                self.__dataSocket = None
+                return
+            Logger().info("Connessione dati avvenuta")
             res = self.__dataSocket.sendall(data)
+            if self.__dataSocket != None:
+                self.__dataSocket.close()
+                Logger().info("Disconnessione data socket OK")
 
         Logger().info("Dati inviati")
