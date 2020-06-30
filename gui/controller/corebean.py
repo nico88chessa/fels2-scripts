@@ -32,7 +32,8 @@ registersWriteRequestSample = {
     "Index ch 0 config": 1,
     "Image DDR block dimension": 64,
     "Encoder map": 1,
-    "Multishot delay": 20
+    "Multishot delay": 20,
+    "Quad index offset": 0
 }
 
 controlWriteRequestSample = {
