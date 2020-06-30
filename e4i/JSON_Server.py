@@ -52,7 +52,8 @@ registers_dict = {
        "Index ch 0 config": 1,
        "Image DDR block dimension" : 0,
        "Encoder map": 1,
-       "Multishot delay": 0
+       "Multishot delay": 0,
+       "Quad index offset" : 0
     }
 
 status_dict = {
@@ -65,7 +66,9 @@ status_dict = {
     "PWM-MAX": False,
     "PWM-NOT-FINISHED": False,
     "Quadrature decoder error": False,
-    "Image region ready": False
+    "Image region ready": False,
+    "Decoded resolution": 0,
+    "Decoded position" : 0
     }
 
 output_dict = {
@@ -98,14 +101,15 @@ region_wrote = True
 class RequestHandler(socketserver.BaseRequestHandler):
 
     def print_registers(self):
-        mem = devmem.DevMem(0x40000000,44)
+        mem = devmem.DevMem(0x40000000,47)
         print("*** PRINT REGISTERS ***")
-        print(mem.read(0x0, 44).hexdump(4))
+        print(mem.read(0x0, 47).hexdump(4))
+
 
     def handle_Registers_write(self,dict):
-        mem = devmem.DevMem(0x40000000,44)
+        mem = devmem.DevMem(0x40000000,47)
         mem.debug_set(False)
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         if "Number of periods channel TEST" in dict:
             if (dict["Number of periods channel TEST"] != registers_dict["Number of periods channel TEST"]):
                 registers_dict["Number of periods channel TEST"] = dict["Number of periods channel TEST"]
@@ -117,7 +121,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
         if "Total columns to be printed" in dict:
             if (dict["Total columns to be printed"] != registers_dict["Total columns to be printed"]):
                 registers_dict["Total columns to be printed"] = dict["Total columns to be printed"]
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         mem.write(0x24,[registers_dict["Total columns to be printed"]])
         if "Accelleration turns to be ignored" in dict:
             if (dict["Accelleration turns to be ignored"] != registers_dict["Accelleration turns to be ignored"]):
@@ -207,7 +211,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
         if "Image DDR block dimension" in dict:
             if (dict["Image DDR block dimension"] != registers_dict["Image DDR block dimension"]):
                 registers_dict["Image DDR block dimension"] = dict["Image DDR block dimension"]
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         mem.write(0x80,[registers_dict["Image DDR block dimension"]])
         if "Encoder map" in dict:
             if (dict["Encoder map"] != registers_dict["Encoder map"]):
@@ -223,15 +227,20 @@ class RequestHandler(socketserver.BaseRequestHandler):
             if (dict["Multishot delay"] != registers_dict["Multishot delay"]):
                 registers_dict["Multishot delay"] = dict["Multishot delay"]
         mem.write(0x88,[registers_dict["Multishot delay"]])
+        if "Quad index offset" in dict:
+            if (dict["Quad index offset"] != registers_dict["Quad index offset"]):
+                registers_dict["Quad index offset"] = dict["Quad index offset"]
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
+        mem.write(0xB8,[registers_dict["Quad index offset"]])
         #registri impostati dalla PS
         #read_addr 0xA8
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         mem.write(0xA8,[address_mod_tab])
         #control_irq_reg 0x0C
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         mem.write(0x0C,[0x1E])
         #tot_dim_enc_reg 0x70
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         dim_enc_map = math.ceil(registers_dict["Encoder resolution"]/32)
         mem.write(0x70,[dim_enc_map])
         #addr_ddr_image1_reg 0x74
@@ -242,7 +251,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
         mem.write(0x7C,[address_reg_img3])
         #read_addr 0xA8
         print("*** PRINT REGISTERS ***")
-        print(mem.read(0x0, 44).hexdump(4))
+        print(mem.read(0x0, 47).hexdump(4))
         return {"Response code": 0}
 
     def handle_Registers_read(self,dict):
@@ -251,9 +260,9 @@ class RequestHandler(socketserver.BaseRequestHandler):
         return dall
 
     def handle_Control_write(self,dict):
-        mem = devmem.DevMem(0x40000000,44)
+        mem = devmem.DevMem(0x40000000,47)
         reg = 0
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         if "Modulator mode" in dict:
             if (dict["Modulator mode"] != control_dict["Modulator mode"]):
                 control_dict["Modulator mode"] = dict["Modulator mode"]
@@ -314,14 +323,14 @@ class RequestHandler(socketserver.BaseRequestHandler):
         if "N shot" in dict:
             control_dict["N shot"] = dict["N shot"]
         reg = reg + control_dict["N shot"] * 0x2000000
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         print(hex(reg))
         mem.write(0x00,[reg])
         if "Resume from pause" in dict:
             control_dict["Resume from pause"] = dict["Resume from pause"]
             if dict["Resume from pause"] == True:
                 status_dict["Print paused"] = False
-                a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+                a = mem.read(0xB8,1)[0x0]; #WALKAROUND
                 mem.write(0xA4,[(4+2048)])
                 print("Here")
         return {"Response code": 0}
@@ -332,20 +341,20 @@ class RequestHandler(socketserver.BaseRequestHandler):
         return dall
 
     def handle_Output_enable(self,dict):
-        mem = devmem.DevMem(0x40000000,44)
+        mem = devmem.DevMem(0x40000000,47)
         if "Laser output enable 1" in dict:
             if (dict["Laser output enable 1"] != output_dict["Laser output enable 1"]):
                 output_dict["Laser output enable 1"] = dict["Laser output enable 1"]
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         mem.write(0x10,[int(output_dict["Laser output enable 1"],0)])
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         mem.write(0x8C,[int(output_dict["Laser output enable 1"],0)])
         if "Laser output enable 2" in dict:
             if (dict["Laser output enable 2"] != output_dict["Laser output enable 2"]):
                 output_dict["Laser output enable 2"] = dict["Laser output enable 2"]
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         mem.write(0x14,[int(output_dict["Laser output enable 2"],0)])
-        a = mem.read(0xAC,1)[0x0]; #WALKAROUND
+        a = mem.read(0xB8,1)[0x0]; #WALKAROUND
         mem.write(0x90,[int(output_dict["Laser output enable 2"],0)])
         return {"Response code": 0}
 
@@ -366,13 +375,17 @@ class RequestHandler(socketserver.BaseRequestHandler):
         return dall
 
     def handle_Status_read(self,dict):
-        mem = devmem.DevMem(0x40000000,44)
+        mem = devmem.DevMem(0x40000000,47)
         a = mem.read(0x20,1)[0x0];
         status_dict["Printed columns"] = a;
         a = mem.read(0x6C,1)[0x0];
         status_dict["Total turns"] = a;
         a = mem.read(0x08,1)[0x0];
         status_dict["FPGA Revision date"] = a;
+        a = mem.read(0xB0,1)[0x0];
+        status_dict["Decoded resolution"] = a;
+        a = mem.read(0xB4,1)[0x0];
+        status_dict["Decoded position"] = a;
         dall = {"Response code": 0}
         dall.update(status_dict)
         return dall
@@ -380,39 +393,39 @@ class RequestHandler(socketserver.BaseRequestHandler):
     def handle(self):
         global shared_string
         while (True):
-            data = self.request.recv(1024)
-            data_string = data.decode("utf-8")
-            data_dict = json.loads(data_string)
-            if data_dict["Request"] != "Status read":
-                print("serving JSON")
-                print(data_dict)
-            try:
-                if data_dict["Request"] == "Registers write":
-                    response_dict = self.handle_Registers_write(data_dict)
-                elif data_dict["Request"] == "Registers read":
-                    response_dict = self.handle_Registers_read(data_dict)
-                elif data_dict["Request"] == "Output enable":
-                    response_dict = self.handle_Output_enable(data_dict)
-                elif data_dict["Request"] == "Output enable read":
-                    response_dict = self.handle_Output_enable_read(data_dict)
-                elif data_dict["Request"] == "Control write":
-                    response_dict = self.handle_Control_write(data_dict)
-                elif data_dict["Request"] == "Control read":
-                    response_dict = self.handle_Control_read(data_dict)
-                elif data_dict["Request"] == "Status read":
-                    response_dict = self.handle_Status_read(data_dict)
-                elif data_dict["Request"] == "Data transfer":
-                    response_dict = self.handle_Data_write(data_dict)
-                elif data_dict["Request"] == "Data transfer read":
-                    response_dict = self.handle_Data_read(data_dict)
-                else:
-                    print("REQUEST NOT RECOGNIZED")
-                    response_dict = {"Response code" : 1}
-            except:
-                print("BAD REQUEST")
-                response_dict = {"Response code" : 1}
-            response = json.dumps(response_dict).encode()
-            self.request.send(response)
+        	data = self.request.recv(1024)
+        	data_string = data.decode("utf-8")
+        	data_dict = json.loads(data_string)
+        	if data_dict["Request"] != "Status read":
+	            print("serving JSON")
+	            print(data_dict)
+	        try:
+	            if data_dict["Request"] == "Registers write":
+	                response_dict = self.handle_Registers_write(data_dict)
+	            elif data_dict["Request"] == "Registers read":
+	                response_dict = self.handle_Registers_read(data_dict)
+	            elif data_dict["Request"] == "Output enable":
+	                response_dict = self.handle_Output_enable(data_dict)
+	            elif data_dict["Request"] == "Output enable read":
+	                response_dict = self.handle_Output_enable_read(data_dict)
+	            elif data_dict["Request"] == "Control write":
+	                response_dict = self.handle_Control_write(data_dict)
+	            elif data_dict["Request"] == "Control read":
+	                response_dict = self.handle_Control_read(data_dict)
+	            elif data_dict["Request"] == "Status read":
+	                response_dict = self.handle_Status_read(data_dict)
+	            elif data_dict["Request"] == "Data transfer":
+	                response_dict = self.handle_Data_write(data_dict)
+	            elif data_dict["Request"] == "Data transfer read":
+	                response_dict = self.handle_Data_read(data_dict)
+	            else:
+	                print("REQUEST NOT RECOGNIZED")
+	                response_dict = {"Response code" : 1}
+	        except:
+	            print("BAD REQUEST")
+	            response_dict = {"Response code" : 1}
+	        response = json.dumps(response_dict).encode()
+        	self.request.send(response)
         return
 
 class RequestHandler1(socketserver.BaseRequestHandler):
@@ -466,7 +479,7 @@ class IRQThread (Thread):
         Thread.__init__(self)
     def run(self):
         global region_wrote
-        mem1 = devmem.DevMem(0x40000000,44)
+        mem1 = devmem.DevMem(0x40000000,47)
         time_2 = time.time()
         while True:
             print ("Waiting IRQ")
@@ -477,7 +490,7 @@ class IRQThread (Thread):
             feed = sts & 4
             if (feed != 0):
                 if region_wrote == True:
-                    a = mem1.read(0xAC,1)[0x0] #WALKAROUND
+                    a = mem1.read(0xB8,1)[0x0] #WALKAROUND
                     mem1.write(0xA4,[(2+512)])
                     status_dict["Image region ready"] = True
                     region_wrote = False
@@ -489,13 +502,13 @@ class IRQThread (Thread):
             finished = sts & 8
             if (finished != 0):
                 status_dict["Print finished"] = True
-                a = mem1.read(0xAC,1)[0x0] #WALKAROUND
+                a = mem1.read(0xB8,1)[0x0] #WALKAROUND
                 mem1.write(0xA4,[(1024+2048+512)])
             qdr = mem1.read(0x68,1)[0x0]
             if (qdr != 0 and qdr != 8):
                 print("Quadrature irq")
                 print(qdr)
-                a = mem1.read(0xAC,1)[0x0] #WALKAROUND
+                a = mem1.read(0xB8,1)[0x0] #WALKAROUND
                 mem1.write(0xA4,[(16+32+64+128)])
             time_2 = time.time()
             print(sts)
