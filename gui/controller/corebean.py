@@ -33,13 +33,16 @@ registersWriteRequestSample = {
     "Image DDR block dimension": 64,
     "Encoder map": 1,
     "Multishot delay": 20,
-    "Quad index offset": 0
+    "Quad index offset": 0,
+    "Quadrature decoder count direction": 0,
+    "Total pixel column": 0
 }
 
 controlWriteRequestSample = {
     "Request": "Control write",
     "Modulator mode": "Grayscale 8 bit",
-    "Start": True ,
+    "Start": True,
+    "Stop": False,
     "Update register": True,
     "Resume from pause": False,
     "Pause": False,
@@ -54,8 +57,8 @@ controlWriteRequestSample = {
 
 outputWriteRequestSample = {
     "Request": "Output enable",
-    "Laser output enable 1": "0xFFFFFFFF",
-    "Laser output enable 2": "0xFFFFFFFF",
+    "Laser output enable 1": "0x00000000",
+    "Laser output enable 2": "0x00000000",
 }
 
 class CoreBean(QObject):
@@ -70,6 +73,7 @@ class CoreBean(QObject):
     outputWriteResponseChanged = Signal()
     outputReadResponseChanged = Signal()
     statusResponseChanged = Signal()
+    dataTransferReadResponseChanged = Signal()
     mapFilepathChanged = Signal()
     modulationTableFilepathChanged = Signal()
     imageFilepathChanged = Signal()
@@ -100,6 +104,9 @@ class CoreBean(QObject):
 
         # status
         self.__statusResponse = ""
+
+        # data transfer read
+        self.__dataTransferReadResponse = ""
 
         # streaming
         self.__mapFilepath = ""
@@ -173,6 +180,12 @@ class CoreBean(QObject):
     def setStatusResponse(self, data):
         self.__statusResponse = data
         self.statusResponseChanged.emit()
+
+    def getDataTransferReadResponse(self):
+        return self.__dataTransferReadResponse
+    def setDataTransferReadResponse(self, data):
+        self.__dataTransferReadResponse = data
+        self.dataTransferReadResponseChanged.emit()
 
     def getMapFilepath(self):
         return self.__mapFilepath
@@ -248,6 +261,8 @@ class CoreBean(QObject):
                                    notify=outputReadResponseChanged)
     pStatusResponse = Property(str, getStatusResponse, setStatusResponse,
                                notify=statusResponseChanged)
+    pDataTransferReadResponse = Property(str, getDataTransferReadResponse, setDataTransferReadResponse,
+                               notify=dataTransferReadResponseChanged)
     pMapFilepath = Property(str, getMapFilepath, setMapFilepath,
                             notify=mapFilepathChanged)
     pModulationTableFilepath = Property(str, getModulationTableFilepath, setModulationTableFilepath,

@@ -7,7 +7,7 @@ FELS2_POLLING_TIME_MS = 1000
 
 class Fels2Inspector(QObject):
 
-    fels2Updated = Signal(str, str, str, str)
+    fels2Updated = Signal(str, str, str, str, str)
     processStarted = Signal()
     processStopped = Signal()
 
@@ -36,8 +36,9 @@ class Fels2Inspector(QObject):
             control = f2Ctrl.readControl()
             output = f2Ctrl.readOutput()
             status = f2Ctrl.readStatus()
+            dataTransferRead = f2Ctrl.readDataTransfer()
 
-            self.fels2Updated.emit(register, control, output, status)
+            self.fels2Updated.emit(register, control, output, status, dataTransferRead)
         else:
             socketProblem = "Errore connessione socket"
-            self.fels2Updated.emit(socketProblem, socketProblem, socketProblem, socketProblem)
+            self.fels2Updated.emit(socketProblem, socketProblem, socketProblem, socketProblem, socketProblem)

@@ -10,6 +10,8 @@ SLOT_SIZE_BYTE = 4
 if __name__ == "__main__":
 
     pulsesEncoder = int (input("Numero impulsi encoder: "))
+    # isByteMultiple = input("Impulsi enc. virtuale multiplo di 8? S/N : ")
+    # isByteMultiple = (isByteMultiple == "S") or (isByteMultiple == "s")
 
     # multiplo del byte, altrimenti bitarray
     # ha problemi nella conversione con endianess
@@ -41,16 +43,32 @@ if __name__ == "__main__":
             encodeUIntMap[intPos] |= 0x01 << bitOffset
             countVirtualPulses += 1
 
+        # if isByteMultiple and not (countVirtualPulses % 8 == 0):
+        #     byteOffset = math.floor (bitOffset / 8)
+        #     r = bitOffset % 8
+        #     for r in range(r, 8):
+        #         # bitOffset = int(r % (SLOT_SIZE_BYTE * 8))
+        #         encodeUIntMap[intPos] |= 0x01 << (r + byteOffset * 8)
+        #         countVirtualPulses += 1
+
     elif choice == 2:
         pulsesVirtualEncoder = int (input("Numero impulsi encoder virtuale: "))
         step = float(pulsesEncoder / pulsesVirtualEncoder)
         for i in range(pulsesVirtualEncoder):
             position = round(step * i)
             # encoderMap[position] = True
-            intPos = int(i / (SLOT_SIZE_BYTE*8))
-            bitOffset = int(i % (SLOT_SIZE_BYTE*8))
+            intPos = int(position / (SLOT_SIZE_BYTE*8))
+            bitOffset = int(position % (SLOT_SIZE_BYTE*8))
             encodeUIntMap[intPos] |= 0x01 << bitOffset
             countVirtualPulses += 1
+
+        # if isByteMultiple and not (countVirtualPulses % 8 == 0):
+        #     r = bitOffset % 8
+        #     for r in range(r, 8):
+        #         bitOffset = int(r % (SLOT_SIZE_BYTE * 8))
+        #         encodeUIntMap[intPos] |= 0x01 << bitOffset
+        #         countVirtualPulses += 1
+
     else:
         exit(0)
 

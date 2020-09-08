@@ -689,38 +689,87 @@ Window {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
 
-                        ScrollView {
-                            id: svDataResponse
+                        RowLayout {
+                            id: rowLayoutTest
                             anchors.fill: parent
-                            //                            clip: true
 
-                            TextArea {
-                                id: taDataResponse
-                                readOnly: false
-                                font.pointSize: 10
-                                font.family: "Ubuntu Mono"
-                                selectionColor: "#0B6FAD"
-                                selectedTextColor: "#FFFFFF"
-                                selectByMouse: true
-                                color: "#FFFFFF"
+                            Item {
+                                id: itemDataResponse
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
 
-                                background: Rectangle {
-                                    color: "#000000"
-                                }
+                                ScrollView {
+                                    id: svDataResponse
+                                    anchors.fill: parent
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
 
-                                Connections {
-                                    target: coreController
-                                    function onUpdateTransferConsole(outputData) {
-                                        if (taDataResponse.lineCount > 200) {
-                                            taDataResponse.clear();
+                                    TextArea {
+                                        id: taDataResponse
+                                        readOnly: false
+                                        font.pointSize: 10
+                                        font.family: "Ubuntu Mono"
+                                        selectionColor: "#0B6FAD"
+                                        selectedTextColor: "#FFFFFF"
+                                        selectByMouse: true
+                                        color: "#FFFFFF"
+
+                                        background: Rectangle {
+                                            color: "#000000"
                                         }
-                                        taDataResponse.append(outputData)
+
+                                        Connections {
+                                            target: coreController
+                                            function onUpdateTransferConsole(outputData) {
+                                                if (taDataResponse.lineCount > 200) {
+                                                    taDataResponse.clear();
+                                                }
+                                                taDataResponse.append(outputData)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+
+                            Item {
+                                id: itemDataTransferRead
+                                Layout.fillHeight: true
+                                Layout.fillWidth: true
+
+                                ScrollView {
+                                    id: svDataTransferRead
+                                    anchors.fill: parent
+                                    Layout.fillHeight: true
+                                    Layout.fillWidth: true
+
+                                    TextArea {
+                                        id: taDataTransferRead
+                                        readOnly: false
+                                        font.pointSize: 10
+                                        font.family: "Ubuntu Mono"
+                                        selectionColor: "#0B6FAD"
+                                        selectedTextColor: "#FFFFFF"
+                                        selectByMouse: true
+                                        color: "#FFFFFF"
+
+                                        background: Rectangle {
+                                            color: "#000000"
+                                        }
+
+                                        Connections {
+                                            target: coreBean
+                                            function onDataTransferReadResponseChanged() {
+                                                taDataTransferRead.clear();
+                                                taDataTransferRead.text = coreBean.pDataTransferReadResponse
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
-
                     }
+
                 }
             }
 
@@ -889,8 +938,4 @@ Window {
 
 
 
-/*##^##
-Designer {
-    D{i:97;anchors_height:100;anchors_width:100;anchors_x:143;anchors_y:179}
-}
-##^##*/
+

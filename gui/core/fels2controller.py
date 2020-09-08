@@ -5,7 +5,8 @@ import socket
 import json
 
 
-IP_ADDRESS = "192.168.1.100"
+# IP_ADDRESS = "192.168.1.100"
+IP_ADDRESS = "168.254.12.2"
 DIAGNOSTIC_PORT = 8000
 DATA_PORT = 8001
 BUFFER_RECEIVE_SIZE = 1024
@@ -163,6 +164,26 @@ class Fels2Controller(metaclass=Singleton):
                 self.__disconnectInternal()
                 return "Errore read status"
             outputDataJson = json.loads(statusData.decode())
+            prettyOutput = json.dumps(outputDataJson, indent=4, sort_keys=True)
+
+        return prettyOutput
+
+    def readDataTransfer(self):
+        dataTransferReadData = b""
+        with self.__lock:
+            Logger().info("Invio comando data transfer read")
+            strCommand = json.dumps(readTransferRequest, indent=4)
+            Logger().debug("Str: " + strCommand)
+            try:
+                len = self.__diagnosticSocket.sendall(strCommand.encode())
+                Logger().debug("Ricevuto bytes: " + str(len))
+                dataTransferReadData = self.__diagnosticSocket.recv(BUFFER_RECEIVE_SIZE)
+            except OSError as msg:
+                Logger().error("Errore data transfer read")
+                Logger().error("Err: " + str(msg))
+                self.__disconnectInternal()
+                return "Errore data transfer read"
+            outputDataJson = json.loads(dataTransferReadData.decode())
             prettyOutput = json.dumps(outputDataJson, indent=4, sort_keys=True)
 
         return prettyOutput

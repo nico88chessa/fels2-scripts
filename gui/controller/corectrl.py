@@ -59,11 +59,12 @@ class CoreController(QObject):
         self.__fels2Watcher.finished.connect(self.__fels2Inspector.deleteLater)
         self.__fels2Watcher.finished.connect(self.__fels2Watcher.deleteLater)
 
-        self.__fels2Inspector.fels2Updated.connect(lambda r,c,o,s: (
+        self.__fels2Inspector.fels2Updated.connect(lambda r,c,o,s,d: (
             self.__bean.setRegistersReadResponse(r),
             self.__bean.setControlReadResponse(c),
             self.__bean.setOutputReadResponse(o),
-            self.__bean.setStatusResponse(s))
+            self.__bean.setStatusResponse(s),
+            self.__bean.setDataTransferReadResponse(d))
         )
 
         self.__fels2Watcher.start()
