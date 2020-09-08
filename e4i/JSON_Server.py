@@ -254,7 +254,7 @@ class RequestHandler(socketserver.BaseRequestHandler):
         mem.write(0xA8,[address_mod_tab])
         #control_irq_reg 0x0C
         a = mem.read(0xBC,1)[0x0]; #WALKAROUND
-        mem.write(0x0C,[0x1E])
+        mem.write(0x0C,[0x3E])
         #tot_dim_enc_reg 0x70
         a = mem.read(0xBC,1)[0x0]; #WALKAROUND
         dim_enc_map = math.ceil(registers_dict["Encoder resolution"]/32)
@@ -305,6 +305,8 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 status_dict["Print paused"] = False
                 status_dict["Print stopped"] = False
                 region_dict["Image"] = 1
+                a = mem1.read(0xBC,1)[0x0] #WALKAROUND
+                mem1.write(0xA4,[(1024+2048+512+4096)])
         if "Update register" in dict:
             control_dict["Update register"] = dict["Update register"]
             if dict["Update register"] == True:
