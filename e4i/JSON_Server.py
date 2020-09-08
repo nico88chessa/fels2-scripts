@@ -305,8 +305,8 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 status_dict["Print paused"] = False
                 status_dict["Print stopped"] = False
                 region_dict["Image"] = 1
-                a = mem1.read(0xBC,1)[0x0] #WALKAROUND
-                mem1.write(0xA4,[(1024+2048+512+4096)])
+                a = mem.read(0xBC,1)[0x0] #WALKAROUND
+                mem.write(0xA4,[(1024+2048+512+4096)])
         if "Update register" in dict:
             control_dict["Update register"] = dict["Update register"]
             if dict["Update register"] == True:
