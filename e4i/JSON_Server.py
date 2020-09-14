@@ -73,7 +73,8 @@ status_dict = {
     "Image region ready": False,
     "Last image region": True,
     "Decoded resolution": 0,
-    "Decoded position" : 0
+    "Decoded position" : 0,
+    "Ready to start":False
     }
 
 output_dict = {
@@ -304,7 +305,6 @@ class RequestHandler(socketserver.BaseRequestHandler):
                 status_dict["Print finished"] = False
                 status_dict["Print paused"] = False
                 status_dict["Print stopped"] = False
-                region_dict["Image"] = 1
                 a = mem.read(0xBC,1)[0x0] #WALKAROUND
                 mem.write(0xA4,[(1024+2048+512+4096)])
         if "Update register" in dict:
@@ -459,17 +459,10 @@ class RequestHandler1(socketserver.BaseRequestHandler):
         if (region_dict["Region"] == "Image"):
             if region_dict["Image"] == 1:
                 addr = address_reg_img1
-                if status_dict["Last image region"] == True:
-                    region_dict["Image"] = 2
             elif region_dict["Image"] == 2:
                 addr = address_reg_img2
-                if status_dict["Last image region"] == True:
-                    region_dict["Image"] = 3
             elif region_dict["Image"] == 3:
                 addr = address_reg_img3
-                if status_dict["Last image region"] == True:
-                    region_dict["Image"] = 1
-            status_dict["Image region ready"] = False
         elif region_dict["Region"] == "Encoder map1":
             addr = address_encoder_map1
         elif region_dict["Region"] == "Encoder map2":
@@ -506,6 +499,18 @@ class RequestHandler1(socketserver.BaseRequestHandler):
                 break
             mem[total_byte:total_byte+len(data)]=data
             total_byte = total_byte + len(data)
+
+        if (region_dict["Region"] == "Image"):
+            if status_dict["Last image region"] == True:
+                if region_dict["Image"] == 1:
+                    region_dict["Image"] = 2
+                elif region_dict["Image"] == 2:
+                    region_dict["Image"] = 3
+                    if status_dict["Ready to start"] == False:
+                        status_dict["Ready to start"] = True
+                elif region_dict["Image"] == 3:
+                    region_dict["Image"] = 1
+
         return
 
 class IRQThread (Thread):
@@ -535,12 +540,18 @@ class IRQThread (Thread):
             paused = sts & 16
             if (paused != 0):
                 status_dict["Print paused"] = True
+                region_dict["Image"] = 1
+                status_dict["Ready to start"] = False
             stopped = sts & 32
             if (stopped != 0):
                 status_dict["Print stopped"] = True
+                region_dict["Image"] = 1
+                status_dict["Ready to start"] = False
             finished = sts & 8
             if (finished != 0):
                 status_dict["Print finished"] = True
+                region_dict["Image"] = 1
+                status_dict["Ready to start"] = False
                 a = mem1.read(0xBC,1)[0x0] #WALKAROUND
                 mem1.write(0xA4,[(1024+2048+512)])
             qdr = mem1.read(0x68,1)[0x0]
