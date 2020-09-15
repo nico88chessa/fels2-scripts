@@ -502,6 +502,7 @@ class RequestHandler1(socketserver.BaseRequestHandler):
 
         if (region_dict["Region"] == "Image"):
             if status_dict["Last image region"] == True:
+                status_dict["Image region ready"] = False
                 if region_dict["Image"] == 1:
                     region_dict["Image"] = 2
                 elif region_dict["Image"] == 2:
