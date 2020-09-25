@@ -23,22 +23,23 @@ Window {
 
     id: windowApp
     visible: true
-    width: 1024
+    width: 1280
     height: 768
     minimumHeight: 768
-    minimumWidth: 1024
+    minimumWidth: 1280
     onClosing: {
         coreController.stopProcess()
     }
 
     GridLayout {
         id: gridLayout
+        columns: 3
         anchors.margins: 5
         anchors.fill: parent
 
         ListView {
             id: menuList
-            width: 200
+            width: 120
             spacing: 2
             interactive: false
             boundsBehavior: Flickable.StopAtBounds
@@ -65,9 +66,9 @@ Window {
                     name: "OUTPUT"
                 }
 
-                ListElement {
-                    name: "STATUS"
-                }
+//                ListElement {
+//                    name: "STATUS"
+//                }
 
                 ListElement {
                     name: "DATA TRANSFER"
@@ -83,7 +84,7 @@ Window {
 
                 Rectangle {
                     z: 2
-                    width: 200
+                    width: menuList.width
                     height: 40
                     color: "#803e59db"
                     y: menuList.currentItem.y
@@ -454,47 +455,6 @@ Window {
             }
 
             Item {
-                id: itemStatus
-
-                GridLayout {
-                    id: glStatus
-                    anchors.fill: parent
-                    visible: true
-                    rows: 1
-                    columns: 1
-
-                    Item {
-                        id: itemStatusResponse
-                        Layout.rowSpan: 1
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-
-                        TextArea {
-                            id: taStatusResponse
-                            readOnly: true
-                            font.pointSize: 10
-                            font.family: "Ubuntu Mono"
-                            selectionColor: "#0B6FAD"
-                            selectedTextColor: "#FFFFFF"
-                            selectByMouse: true
-                            anchors.fill: parent
-                            color: "#FFFFFF"
-                            background: Rectangle {
-                                color: "#000000"
-                            }
-                        }
-
-                        Connections {
-                            target: coreBean
-                            function onStatusResponseChanged() {
-                                taStatusResponse.text = coreBean.pStatusResponse
-                            }
-                        }
-                    }
-                }
-            }
-
-            Item {
                 id: itemData
 
                 ColumnLayout {
@@ -801,6 +761,7 @@ Window {
                         TextField {
                             id: tfEncoderPulses
                             text: qsTr("")
+                            Layout.fillWidth: true
                             font.family: "Ubuntu Mono Regular"
                             selectByMouse: true
                             selectionColor: "#0B6FAD"
@@ -822,6 +783,7 @@ Window {
                         TextField {
                             id: tfFileChunkSize
                             text: qsTr("")
+                            Layout.fillWidth: true
                             font.family: "Ubuntu Mono Regular"
                             selectByMouse: true
                             selectionColor: "#0B6FAD"
@@ -860,6 +822,7 @@ Window {
                         TextField {
                             id: tfPeriodTestTime
                             text: coreBean.pPeriodTestTime
+                            Layout.fillWidth: true
                             font.family: "Ubuntu Mono Regular"
                             selectByMouse: true
                             selectionColor: "#0B6FAD"
@@ -877,6 +840,7 @@ Window {
                         TextField {
                             id: tfNumPeriodChannel
                             text: Number(coreBean.pNumPeriodChannel).toLocaleString(Qt.locale(), "f", 3)
+                            Layout.fillWidth: true
                             font.family: "Ubuntu Mono Regular"
                             selectByMouse: true
                             selectionColor: "#0B6FAD"
@@ -894,6 +858,7 @@ Window {
                         TextField {
                             id: tfRotationTestTime
                             text: (Number(coreBean.pRotationTestTime)/1000).toLocaleString(Qt.locale(), "f", 3)
+                            Layout.fillWidth: true
                             font.family: "Ubuntu Mono Regular"
                             selectByMouse: true
                             selectionColor:  "#0B6FAD"
@@ -911,6 +876,7 @@ Window {
                         TextField {
                             id: tfDDRBlockSize
                             text: coreBean.pDDRBlockSize
+                            Layout.fillWidth: true
                             font.family: "Ubuntu Mono Regular"
                             selectByMouse: true
                             selectionColor: "#0B6FAD"
@@ -933,9 +899,58 @@ Window {
             }
 
         }
+
+        Item {
+            id: itemStatus
+            width: 360
+            Layout.fillHeight: true
+
+            GridLayout {
+                id: glStatus
+                anchors.fill: parent
+                visible: true
+                rows: 1
+                columns: 1
+
+                Item {
+                    id: itemStatusResponse
+                    Layout.rowSpan: 1
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+
+                    TextArea {
+                        id: taStatusResponse
+                        readOnly: true
+                        font.pointSize: 10
+                        font.family: "Ubuntu Mono"
+                        selectionColor: "#0B6FAD"
+                        selectedTextColor: "#FFFFFF"
+                        selectByMouse: true
+                        anchors.fill: parent
+                        color: "#FFFFFF"
+                        background: Rectangle {
+                            color: "#333333"
+                        }
+                    }
+
+                    Connections {
+                        target: coreBean
+                        function onStatusResponseChanged() {
+                            taStatusResponse.text = coreBean.pStatusResponse
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 
 
 
+
+/*##^##
+Designer {
+    D{i:0;formeditorZoom:0.75}
+}
+##^##*/
