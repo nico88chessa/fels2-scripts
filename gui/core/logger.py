@@ -33,7 +33,7 @@ class Logger(metaclass=Singleton):
 
         self.__logger = logging.getLogger("logger")
         self.__logger.addHandler(handler)
-        self.__logger.setLevel(logging.DEBUG)
+        self.__logger.setLevel(logging.INFO)
 
     def debug(self, msg):
         self.__logger.debug(msg)

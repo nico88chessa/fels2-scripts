@@ -645,6 +645,40 @@ Window {
                     }
 
                     Item {
+                        id: itemAutoLoad
+                        x: 0
+                        width: 760
+                        height: 50
+                        Layout.rightMargin: 10
+                        Layout.leftMargin: 10
+                        Layout.minimumHeight: 50
+                        Layout.fillWidth: true
+
+                        RowLayout {
+                            id: rlAutoLoad
+                            anchors.fill: parent
+
+                            Item {
+                                id: element
+                                width: 0
+                                height: 0
+                                Layout.fillWidth: true
+                            }
+
+                            CheckBox {
+                                id: cbAutoLoad
+                                text: qsTr("Auto load region")
+                                Layout.minimumWidth: 200
+//                                checked: bean.pIsAutoLoadRegion
+//                                onCheckStateChanged: coreController.setAutoLoad(cbAutoLoad.checked)
+                                onCheckStateChanged: coreBean.pIsAutoLoadRegion = cbAutoLoad.checked
+                            }
+
+                        }
+
+                    }
+
+                    Item {
                         id: test
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -797,8 +831,6 @@ Window {
 
                         Item {
                             id: element1
-                            width: 200
-                            height: 200
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             Layout.columnSpan: 2
@@ -949,8 +981,4 @@ Window {
 
 
 
-/*##^##
-Designer {
-    D{i:0;formeditorZoom:0.75}
-}
-##^##*/
+

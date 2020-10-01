@@ -111,7 +111,7 @@ class Fels2Controller(metaclass=Singleton):
     def readRegisters(self):
         registers = b""
         with self.__lock:
-            Logger().info("Invio comando read registers")
+            Logger().debug("Invio comando read registers")
             strCommand = json.dumps(readRegisterMap, indent=4)
             Logger().debug("Str: "+strCommand)
             try:
@@ -131,7 +131,7 @@ class Fels2Controller(metaclass=Singleton):
     def readControl(self):
         controlData = b""
         with self.__lock:
-            Logger().info("Invio comando read control")
+            Logger().debug("Invio comando read control")
             strCommand = json.dumps(readControlMap, indent=4)
             Logger().debug("Str: " + strCommand)
             try:
@@ -151,7 +151,7 @@ class Fels2Controller(metaclass=Singleton):
     def readStatus(self):
         statusData = b""
         with self.__lock:
-            Logger().info("Invio comando read status")
+            Logger().debug("Invio comando read status")
             strCommand = json.dumps(readStatusMap, indent=4)
             Logger().debug("Str: " + strCommand)
             try:
@@ -171,7 +171,7 @@ class Fels2Controller(metaclass=Singleton):
     def readDataTransfer(self):
         dataTransferReadData = b""
         with self.__lock:
-            Logger().info("Invio comando data transfer read")
+            Logger().debug("Invio comando data transfer read")
             strCommand = json.dumps(readTransferRequest, indent=4)
             Logger().debug("Str: " + strCommand)
             try:
@@ -191,7 +191,7 @@ class Fels2Controller(metaclass=Singleton):
     def readOutput(self):
         outputData = b""
         with self.__lock:
-            Logger().info("Invio comando read output")
+            Logger().debug("Invio comando read output")
             strCommand = json.dumps(readOutputMap, indent=4)
             Logger().debug("Str: " + strCommand)
             try:
@@ -211,7 +211,7 @@ class Fels2Controller(metaclass=Singleton):
     def sendRequest(self, request: str) -> str:
         outputData = b""
         with self.__lock:
-            Logger().info("Invio request")
+            Logger().debug("Invio request")
             Logger().debug("Str: " + request)
             data = json.loads(request)
             bytes2Send = json.dumps(data).encode()

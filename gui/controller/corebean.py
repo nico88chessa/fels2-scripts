@@ -74,6 +74,7 @@ class CoreBean(QObject):
     outputReadResponseChanged = Signal()
     statusResponseChanged = Signal()
     dataTransferReadResponseChanged = Signal()
+    autoLoadRegionChanged = Signal()
     mapFilepathChanged = Signal()
     modulationTableFilepathChanged = Signal()
     imageFilepathChanged = Signal()
@@ -107,6 +108,7 @@ class CoreBean(QObject):
 
         # data transfer read
         self.__dataTransferReadResponse = ""
+        self.__autoLoadRegion = False
 
         # streaming
         self.__mapFilepath = ""
@@ -187,6 +189,13 @@ class CoreBean(QObject):
         self.__dataTransferReadResponse = data
         self.dataTransferReadResponseChanged.emit()
 
+    def isAutoLoadRegion(self):
+        return self.__autoLoadRegion
+
+    def setAutoLoadRegion(self, autoLoadRegion):
+        self.__autoLoadRegion = autoLoadRegion
+        self.autoLoadRegionChanged.emit()
+
     def getMapFilepath(self):
         return self.__mapFilepath
     def setMapFilepath(self, value):
@@ -263,6 +272,7 @@ class CoreBean(QObject):
                                notify=statusResponseChanged)
     pDataTransferReadResponse = Property(str, getDataTransferReadResponse, setDataTransferReadResponse,
                                notify=dataTransferReadResponseChanged)
+    pIsAutoLoadRegion = Property(bool, isAutoLoadRegion, setAutoLoadRegion, notify=autoLoadRegionChanged)
     pMapFilepath = Property(str, getMapFilepath, setMapFilepath,
                             notify=mapFilepathChanged)
     pModulationTableFilepath = Property(str, getModulationTableFilepath, setModulationTableFilepath,

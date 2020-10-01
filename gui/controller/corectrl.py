@@ -1,4 +1,5 @@
 import json
+import threading
 
 from PySide2.QtCore import QObject, Property, Signal, Slot, QThread, QMetaObject, QEventLoop
 from gui.core.logger import Logger
@@ -8,6 +9,42 @@ import gui.core.fels2controller as F2CTRL
 from gui.core.fels2inspector import Fels2Inspector
 
 FELS2_PERIOD_TIME = 5120
+
+
+class SendImageThread(threading.Thread):
+    def __init__(self, imagePath: str):
+        threading.Thread.__init__(self)
+        self.imagePath = imagePath
+
+    def run(self):
+        Logger().info("Sending image")
+        Logger().info("Apertura file: "+self.imagePath)
+        try:
+            with open(self.imagePath, "rb") as f:
+                image = f.read()
+        except OSError as err:
+            Logger().error("Sending image KO")
+            return
+
+        Logger().info("Immagine letta correttamente")
+
+        f2Ctrl = Fels2Controller()
+        if f2Ctrl.connect():
+            # preparo la scheda a ricevere l'immagine
+            request = F2CTRL.imageTransferRequest
+            strCommand = json.dumps(request, indent=4)
+            requestResult = f2Ctrl.sendRequest(strCommand)
+            Logger().info("Thread invio automatico: invio richiesta trasferimento dati")
+
+            # invio dati immagine
+            f2Ctrl.sendData(image)
+            Logger().info("Thread invio automatico: dati inviati correttamente")
+
+            # verifico che l'immagine e' settata nella scheda
+            request = F2CTRL.readTransferRequest
+            strCommand = json.dumps(request, indent=4)
+            requestResult = f2Ctrl.sendRequest(strCommand)
+            Logger().info("Thread invio automatico: invio completato correttamente")
 
 
 class CoreController(QObject):
@@ -20,6 +57,7 @@ class CoreController(QObject):
         self.__bean = None
         self.__fels2Watcher: QThread = None
         self.__fels2Inspector: Fels2Inspector = None
+        self.__autoLoadThread = None
         self.startWatcher()
 
     def getBean(self):
@@ -65,6 +103,10 @@ class CoreController(QObject):
             self.__bean.setOutputReadResponse(o),
             self.__bean.setStatusResponse(s),
             self.__bean.setDataTransferReadResponse(d))
+        )
+
+        self.__fels2Inspector.fels2Updated.connect(lambda r, c, o, s, d: (
+            self.sendImageAutoLoadIfNeeded(s))
         )
 
         self.__fels2Watcher.start()
@@ -222,5 +264,93 @@ class CoreController(QObject):
         self.__bean.setNumPeriodChannel(encoderPulses/4)
         self.__bean.setRotationTestTime(encoderPulses/4*FELS2_PERIOD_TIME)
         self.__bean.setDDRBlockSize(fileChunk*1024**2/4)
+
+    # @Slot()
+    # def setupThreadAutoLoad(self):
+    #     Logger().info("Setup thread auto load")
+    #     if self.__bean.isAutoLoadRegion():
+    #         Logger().info("Creazione thread auto load")
+    #         if self.__autoLoadThread != None:
+    #             if self.__autoLoadThread.is_alive():
+    #                 Logger().info("In attesa che termini l'esecuzione quello attuale")
+    #                 self.__autoLoadThread.join()
+    #         self.__autoLoadThread = SendImageThread(self.__bean.getImageFilepath())
+    #
+    #     else:
+    #         Logger().info("Chiusura thread auto load")
+    #         if self.__autoLoadThread != None:
+    #             if self.__autoLoadThread.is_alive():
+    #                 Logger().info("In attesa che termini l'esecuzione quello attuale")
+    #                 self.__autoLoadThread.join()
+    #         self.__autoLoadThread = None
+    #         Logger().info("Thread auto load terminato")
+
+    def sendImageAutoLoadIfNeeded(self, status: str):
+        Logger().info("Parsing status")
+        if self.__bean.isAutoLoadRegion():
+
+            try:
+                statusParsed = json.loads(status)
+                if 'Image region ready' in statusParsed:
+                    isRegionToLoad = bool(statusParsed["Image region ready"])
+
+                    if isRegionToLoad:
+                        Logger().info("Immagine da caricare")
+
+                        if self.__autoLoadThread == None:
+                            Logger().info("Creazione thread per inviare nuova regione")
+                            self.__autoLoadThread = SendImageThread(self.__bean.getImageFilepath())
+                            self.__autoLoadThread.start()
+                        # if self.__autoLoadThread != None:
+                        else:
+                            if not self.__autoLoadThread.is_alive():
+                                Logger().info("Ricreazione thread per inviare nuova regione")
+                                self.__autoLoadThread = SendImageThread(self.__bean.getImageFilepath())
+                                self.__autoLoadThread.start()
+                            else:
+                                Logger().info("Thread sta gia' inviando una regione")
+                        # else:
+                        #     Logger().info("Thread auto load non inizializzato")
+                    else:
+                        Logger().info("Nessuna immagine da caricare")
+
+            except json.JSONDecodeError as err:
+                Logger.error("Errore decodifica status: "+str(err))
+                return
+
+
+    # def sendImageAutoLoadFunctor(self, imagePath: str):
+    #     Logger().info("Sending image")
+    #     Logger().info("Apertura file: " + imagePath)
+    #     try:
+    #         with open(imagePath, "rb") as f:
+    #             image = f.read()
+    #     except OSError as err:
+    #         self.updateTransferConsole.emit("File: " + imagePath + " non trovato")
+    #         return
+    #
+    #     Logger().info("Immagine letta correttamente")
+    #
+    #     f2Ctrl = Fels2Controller()
+    #     if f2Ctrl.connect():
+    #         # preparo la scheda a ricevere l'immagine
+    #         request = F2CTRL.imageTransferRequest
+    #         strCommand = json.dumps(request, indent=4)
+    #         self.updateTransferConsole.emit(request)
+    #         requestResult = f2Ctrl.sendRequest(strCommand)
+    #         self.updateTransferConsole.emit(requestResult)
+    #
+    #         # invio dati immagine
+    #         f2Ctrl.sendData(image)
+    #
+    #         # verifico che l'immagine e' settata nella scheda
+    #         request = F2CTRL.readTransferRequest
+    #         strCommand = json.dumps(request, indent=4)
+    #         self.updateTransferConsole.emit(request)
+    #         requestResult = f2Ctrl.sendRequest(strCommand)
+    #         self.updateTransferConsole.emit(requestResult)
+    #
+    #     else:
+    #         self.updateTransferConsole.emit("Invio image KO")
 
     pBean = Property(CoreBean, getBean, setBean, notify=beanChanged)
