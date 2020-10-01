@@ -27,29 +27,48 @@ if __name__ == "__main__":
     if choice == 1:
         # powerTable1b : array #("H", (0,)*FELS2_MAX_NUM_LASERS*2)
 
-        laserNum = int(input("Numero laser (1/2): "))
-        tonLaser1Ns = round(float(input("Selezionare Ton laser 1 [us]: "))*1000)
-        tonLaser1Ticks = int(tonLaser1Ns / FELS2_CLOCK_INTERVAL_NS)
+        laserNum = int(input("Numero laser (da 1 a 8): "))
+        powerTable1b8Laser = array("H", (0,0,)*8)
 
-        if laserNum == 1:
-            powerTable1b = array("H", (0,) * FELS2_MAX_NUM_LASERS * 2)
-            powerTable1b[1] = tonLaser1Ticks
-            filename = "powerTable1b.pot"
-            destFullpath = destPath+filename
-            print("Scrittura mappa in: " + destFullpath)
-            with open(destFullpath, "wb") as fp:
-                fp.write(powerTable1b.tobytes())
-                print("OK")
-        else:
-            tonLaser2Ns = round(float(input("Selezionare Ton laser 2 [us]: "))*1000)
-            tonLaser2Ticks = int(tonLaser2Ns / FELS2_CLOCK_INTERVAL_NS)
-            powerTable1b = array("H", (0, tonLaser1Ticks, 0, tonLaser2Ticks)*int(FELS2_MAX_NUM_LASERS/2))
-            filename = "powerTable1b.pot"
-            destFullpath = destPath + filename
-            print("Scrittura mappa in: "+destFullpath)
-            with open(destFullpath, "wb") as fp:
-                fp.write(powerTable1b.tobytes())
-                print("OK")
+        for i in range(laserNum):
+            tonLaser = round(float(input("Selezionare Ton laser " + str(i) + " [us]: ")) * 1000)
+            tonLaserTicks = int(tonLaser / FELS2_CLOCK_INTERVAL_NS)
+            toffLaser = round(float(input("Selezionare Toff laser "+ str(i) + " [us]: "))*1000)
+            toffLaserTicks = int(toffLaser / FELS2_CLOCK_INTERVAL_NS)
+
+            powerTable1b8Laser[2*i:2*(i+1)] = array("H", [toffLaserTicks, tonLaserTicks])
+        powerTable1b = array("H", powerTable1b8Laser * 8)
+
+        filename = "powerTable1b.pot"
+        destFullpath = destPath+filename
+        print("Scrittura mappa in: " + destFullpath)
+        with open(destFullpath, "wb") as fp:
+            fp.write(powerTable1b.tobytes())
+            print("OK")
+
+
+        # tonLaser1Ns = round(float(input("Selezionare Ton laser 1 [us]: "))*1000)
+        # tonLaser1Ticks = int(tonLaser1Ns / FELS2_CLOCK_INTERVAL_NS)
+        #
+        # if laserNum == 1:
+        #     powerTable1b = array("H", (0,) * FELS2_MAX_NUM_LASERS * 2)
+        #     powerTable1b[1] = tonLaser1Ticks
+        #     filename = "powerTable1b.pot"
+        #     destFullpath = destPath+filename
+        #     print("Scrittura mappa in: " + destFullpath)
+        #     with open(destFullpath, "wb") as fp:
+        #         fp.write(powerTable1b.tobytes())
+        #         print("OK")
+        # else:
+        #     tonLaser2Ns = round(float(input("Selezionare Ton laser 2 [us]: "))*1000)
+        #     tonLaser2Ticks = int(tonLaser2Ns / FELS2_CLOCK_INTERVAL_NS)
+        #     powerTable1b = array("H", (0, tonLaser1Ticks, 0, tonLaser2Ticks)*int(FELS2_MAX_NUM_LASERS/2))
+        #     filename = "powerTable1b.pot"
+        #     destFullpath = destPath + filename
+        #     print("Scrittura mappa in: "+destFullpath)
+        #     with open(destFullpath, "wb") as fp:
+        #         fp.write(powerTable1b.tobytes())
+        #         print("OK")
 
     elif choice == 2:
         tonMaxNs = round(float(input("Selezionare Ton massimo (valore "+str(GS8_MAX_VALUE)+") [us]: "))*1000)
