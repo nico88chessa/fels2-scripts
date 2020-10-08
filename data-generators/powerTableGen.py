@@ -72,8 +72,9 @@ if __name__ == "__main__":
 
     elif choice == 2:
         tonMaxNs = round(float(input("Selezionare Ton massimo (valore "+str(GS8_MAX_VALUE)+") [us]: "))*1000)
+        tonMaxNsTicks = int(tonMaxNs / FELS2_CLOCK_INTERVAL_NS)
         powerTableGS8 = array("H", (0,) * GS8_SIZE)
-        step = tonMaxNs / GS8_MAX_VALUE
+        step = tonMaxNsTicks / GS8_MAX_VALUE
         for i in range(GS8_SIZE):
             powerTableGS8[i] = round(step * i)
 
@@ -86,8 +87,9 @@ if __name__ == "__main__":
 
     elif choice == 3:
         tonMaxNs = round(float(input("Selezionare Ton massimo (valore "+str(GS16_MAX_VALUE)+") [us]: "))*1000)
+        tonMaxNsTicks = int(tonMaxNs / FELS2_CLOCK_INTERVAL_NS)
         powerTableGS16 = array("H", (0,) * GS16_SIZE)
-        step = tonMaxNs / GS16_MAX_VALUE
+        step = tonMaxNsTicks / GS16_MAX_VALUE
 
         for i in range(GS16_SIZE):
             powerTableGS16[i] = round(step * i)

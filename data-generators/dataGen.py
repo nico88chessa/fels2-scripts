@@ -31,7 +31,11 @@ if __name__ == "__main__":
         if blackIsZero:
             imageData = [255-imageData[i] for i in range(len(imageData))]
         '''
-        imageData = [255 - imageData[i] for i in range(len(imageData))]
+
+        if image.mode == "I;16":
+            imageData = [(2**16-1) - imageData[i] for i in range(len(imageData))]
+        else:
+            imageData = [(2**8-1) - imageData[i] for i in range(len(imageData))]
 
         imageRows = [imageData[i*width : (i+1)*width] for i in range(height)]
 
@@ -198,7 +202,8 @@ if __name__ == "__main__":
                 # bytesPerRow = math.ceil(numPixelCircumference) * 8
                 # bytesPerImage = bytesPerRow * height
                 # rawImage = array("L", [0] * bytesPerImage)
-                rawImage = array("L", [0] * numPixels)
+                # rawImage = array("Q", [0] * numPixels)
+                rawImage = array("L")
                 for c in range(chunk):
                     cylinderRow = [0] * numPixelCircumference
                     for colChunk in range(width):
@@ -364,8 +369,9 @@ if __name__ == "__main__":
                 rawImage = array("H", [0] * numPixels)
                 for c in range(chunk):
                     cylinderRow = [0] * numPixelCircumference
-                    for col in range(width):
-                        cylinderRow[col] = imageRows[c][col]
+                    cylinderRow[:width] = imageRows[c]
+                    # for col in range(width):
+                    #     cylinderRow[col] = imageRows[c][col]
                     rawImage[c * numPixelCircumference:] = array("H", cylinderRow)
 
                 currentPath = os.path.dirname(os.path.abspath(__file__))
