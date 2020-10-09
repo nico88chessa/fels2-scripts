@@ -95,7 +95,8 @@ control_dict = {
     "N laser manual": 1,
     "Manual": False,
     "Multishot": False,
-    "N shot": 0
+    "N shot": 0,
+    "Reset region": False
 }
 
 region_dict = {
@@ -349,6 +350,11 @@ class RequestHandler(socketserver.BaseRequestHandler):
         a = mem.read(0xBC,1)[0x0]; #WALKAROUND
         print(hex(reg))
         mem.write(0x00,[reg])
+        if "Reset region" in dict:
+            control_dict["Reset region"] = dict["Reset region"]
+            if dict["Reset region"] == True:
+                region_dict["Image"] = 1
+                status_dict["Ready to start"] = False
         if "Resume from pause" in dict:
             control_dict["Resume from pause"] = dict["Resume from pause"]
             if dict["Resume from pause"] == True:
